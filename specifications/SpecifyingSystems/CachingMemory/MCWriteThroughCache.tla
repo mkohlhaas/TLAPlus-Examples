@@ -49,42 +49,42 @@ MCInitMemInt == {<<CHOOSE p \in Proc : TRUE, NoVal>>}
 (***************************************************************************)
 
 LM_Inner_IInit == /\ omem \in [Adr->Val]
-                  /\ octl = [p \in Proc |-> "rdy"] 
-                  /\ obuf = [p \in Proc |-> NoVal] 
+                  /\ octl = [p \in Proc |-> "rdy"]
+                  /\ obuf = [p \in Proc |-> NoVal]
                   /\ memInt \in InitMemInt
 
-LM_Inner_TypeInvariant == 
+LM_Inner_TypeInvariant ==
   /\ omem \in [Adr->Val]
-  /\ octl \in [Proc -> {"rdy", "busy","done"}] 
+  /\ octl \in [Proc -> {"rdy", "busy","done"}]
   /\ obuf \in [Proc -> MReq \cup Val \cup {NoVal}]
 
-LM_Inner_Req(p) == /\ octl[p] = "rdy" 
-          /\ \E req \in  MReq : 
-                /\ Send(p, req, memInt, memInt') 
+LM_Inner_Req(p) == /\ octl[p] = "rdy"
+          /\ \E req \in  MReq :
+                /\ Send(p, req, memInt, memInt')
                 /\ obuf' = [obuf EXCEPT ![p] = req]
                 /\ octl' = [octl EXCEPT ![p] = "busy"]
-          /\ UNCHANGED omem 
+          /\ UNCHANGED omem
 
-LM_Inner_Do(p) == 
-  /\ octl[p] = "busy" 
+LM_Inner_Do(p) ==
+  /\ octl[p] = "busy"
   /\ omem' = IF obuf[p].op = "Wr"
-              THEN [omem EXCEPT ![obuf[p].adr] = obuf[p].val] 
-              ELSE omem 
+              THEN [omem EXCEPT ![obuf[p].adr] = obuf[p].val]
+              ELSE omem
   /\ obuf' = [obuf EXCEPT ![p] = IF obuf[p].op = "Wr"
                                   THEN NoVal
                                   ELSE omem[obuf[p].adr]]
-  /\ octl' = [octl EXCEPT ![p] = "done"] 
-  /\ UNCHANGED memInt 
+  /\ octl' = [octl EXCEPT ![p] = "done"]
+  /\ UNCHANGED memInt
 
 LM_Inner_Rsp(p) == /\ octl[p] = "done"
                    /\ Reply(p, obuf[p], memInt, memInt')
                    /\ octl' = [octl EXCEPT ![p]= "rdy"]
-                   /\ UNCHANGED <<omem, obuf>> 
+                   /\ UNCHANGED <<omem, obuf>>
 
-LM_Inner_INext == 
-     \E p \in Proc: LM_Inner_Req(p) \/ LM_Inner_Do(p) \/ LM_Inner_Rsp(p) 
+LM_Inner_INext ==
+     \E p \in Proc: LM_Inner_Req(p) \/ LM_Inner_Do(p) \/ LM_Inner_Rsp(p)
 
-LM_Inner_ISpec == 
+LM_Inner_ISpec ==
     LM_Inner_IInit  /\  [][LM_Inner_INext]_<<memInt, omem, octl, obuf>>
 -----------------------------------------------------------------------------
 THEOREM LM_Inner_ISpec => []LM_Inner_TypeInvariant

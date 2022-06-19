@@ -9,15 +9,15 @@ VARIABLE now
 RTini == now \in Real
 
 RTNext(v) == \/ /\ v' = v
-                /\ now' \in {r \in Real : r > now} 
+                /\ now' \in {r \in Real : r > now}
              \/ /\ v' # v
                 /\ now' = now
 
 
 TimerInit(t) == t = 0
-TimerNext(t, A, v, D, E) ==  
+TimerNext(t, A, v, D, E) ==
     /\ t' = IF <<A>>_v \/ ~(ENABLED <<A>>_v)'   \* [ ]_<<now, v, t>> removed
-              THEN 0 
+              THEN 0
               ELSE t + (now'-now)
 
     /\ t' \leq E             \* MaxTime constraint

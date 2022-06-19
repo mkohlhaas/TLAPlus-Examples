@@ -67,7 +67,7 @@ P(Succ) == INSTANCE ReachabilityProofs
 Test == <<\A Succ \in SuccSet : P(Succ)!Reachable0,
           \A Succ \in SuccSet : P(Succ)!Reachable1,
           \A Succ \in SuccSet : P(Succ)!Reachable2,
-          \A Succ \in SuccSet : P(Succ)!Reachable3 >>         
+          \A Succ \in SuccSet : P(Succ)!Reachable3 >>
 ----------------------------------------------------------------------------
 
 (***************************************************************************)
@@ -98,7 +98,7 @@ SuccSet1 == [Nodes -> SUBSET Nodes]
 (* of a constant value once when it starts up and using that same value    *)
 (* every time it has to evaluate the constant.                             *)
 (***************************************************************************)
-RandomSucc(x) ==   
+RandomSucc(x) ==
   LET RECURSIVE RS(_,_)
       RS(F, D) == IF D = {}
                     THEN F

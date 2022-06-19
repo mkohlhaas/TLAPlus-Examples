@@ -21,7 +21,7 @@ EXTENDS Reachability, NaturalsInduction
 (* TLAPS to reason about data structures.                                  *)
 (***************************************************************************)
 LEMMA Reachable0 ==
-       \A S \in SUBSET Nodes : 
+       \A S \in SUBSET Nodes :
            \A n \in S : n \in ReachableFrom(S)
   (*************************************************************************)
   (* Applying the Decompose Proof command to the lemma generates the       *)
@@ -65,8 +65,8 @@ LEMMA Reachable0 ==
       OBVIOUS
   <1>2. QED
       PROOF BY <1>1 DEF ReachableFrom, ExistsPath
-   
-   
+
+
 (***************************************************************************)
 (* The following lemma lies at the heart of the correctness of the         *)
 (* algorithm in module Reachable.  The lemma is not obviously true.  To    *)
@@ -83,8 +83,8 @@ LEMMA Reachable0 ==
 (* proof.  Start by executing the Hide Current Subtree command on the      *)
 (* lemma.                                                                  *)
 (***************************************************************************)
-LEMMA Reachable1 == 
-        \A S, T \in SUBSET Nodes : 
+LEMMA Reachable1 ==
+        \A S, T \in SUBSET Nodes :
           (\A n \in S : Succ[n] \subseteq (S \cup T))
             => (S \cup ReachableFrom(T)) = ReachableFrom(S \cup T)
   (*************************************************************************)
@@ -119,7 +119,7 @@ LEMMA Reachable1 ==
       BY Reachable0
     <2>2. QED
       BY <2>1 DEF ReachableFrom
-  <1>2. ReachableFrom(S \cup T) \subseteq (S \cup ReachableFrom(T))  
+  <1>2. ReachableFrom(S \cup T) \subseteq (S \cup ReachableFrom(T))
     (***********************************************************************)
     (* To prove that a set U is a subset of a set V, we prove that every   *)
     (* element of U is an element of V.  This is proved by letting n be    *)
@@ -152,7 +152,7 @@ LEMMA Reachable1 ==
     (* natural numbers by proving it first for 0.  So we define R(i) as    *)
     (* follows so that R(0) is the assertion for paths of length 1.        *)
     (***********************************************************************)
-    <2> DEFINE R(i) == 
+    <2> DEFINE R(i) ==
                  \A m \in S, q \in Nodes :
                    (\E p \in Seq(Nodes) : /\ IsPathFromTo(p,m,q)
                                           /\ Len(p) = i+1)
@@ -172,7 +172,7 @@ LEMMA Reachable1 ==
                      PROVE  q \in S \cup ReachableFrom(T)
           OBVIOUS
         <4> QED
-          BY DEF IsPathFromTo          
+          BY DEF IsPathFromTo
       <3>2. ASSUME NEW i \in Nat, R(i)
             PROVE  R(i+1)
         (*******************************************************************)
@@ -222,7 +222,7 @@ LEMMA Reachable1 ==
         <4>4. CASE p[2] \in T
           BY <4>1, <4>4 DEF ReachableFrom, ExistsPath
         <4>5. QED
-          BY <4>2, <4>3, <4>4 
+          BY <4>2, <4>3, <4>4
       <3> HIDE DEF R
       <3>3. QED
         BY <3>1, <3>2, NatInduction
@@ -231,7 +231,7 @@ LEMMA Reachable1 ==
     (***********************************************************************)
     <2>2. PICK m \in S, p \in Seq(Nodes) :
                  IsPathFromTo(p,m,n)
-      BY DEF ReachableFrom, ExistsPath 
+      BY DEF ReachableFrom, ExistsPath
     (***********************************************************************)
     (* We have to tell TLAPS to apply <2>1 with i = Len(p)-1.              *)
     (***********************************************************************)
@@ -247,7 +247,7 @@ LEMMA Reachable1 ==
     (* Len(p) > 0, so Len(p)-1 is in Nat.                                  *)
     (***********************************************************************)
     <2>4. QED
-      BY <2>1, <2>2, <2>3 DEF IsPathFromTo   
+      BY <2>1, <2>2, <2>3 DEF IsPathFromTo
   <1>3. QED
     BY <1>1, <1>2
 
@@ -255,8 +255,8 @@ LEMMA Reachable1 ==
 (***************************************************************************)
 (* The proof of this lemma is straightforward.                             *)
 (***************************************************************************)
-LEMMA Reachable2 == 
-            \A S \in SUBSET Nodes: \A n \in S : 
+LEMMA Reachable2 ==
+            \A S \in SUBSET Nodes: \A n \in S :
                  /\ ReachableFrom(S) = ReachableFrom(S \cup Succ[n])
                  /\ n \in ReachableFrom(S)
   <1> SUFFICES ASSUME NEW S \in SUBSET Nodes,
@@ -273,7 +273,7 @@ LEMMA Reachable2 ==
       (*********************************************************************)
       (* This subset relation is trivial because S \subseteq T obviously   *)
       (* implies ReachableFrom(S) \subseteq Reachable(T)                   *)
-      (*********************************************************************)      
+      (*********************************************************************)
       BY DEF ReachableFrom
     <2>2.ReachableFrom(S \cup Succ[n])  \subseteq ReachableFrom(S)
       (*********************************************************************)
@@ -290,11 +290,11 @@ LEMMA Reachable2 ==
         BY DEF ExistsPath
       <3> DEFINE q == <<n>> \o p
       <3>2. (q \in Seq(Nodes)) /\ IsPathFromTo(q, n, o)
-        BY <3>1, SuccAssump  DEF IsPathFromTo            
+        BY <3>1, SuccAssump  DEF IsPathFromTo
       <3>3. QED
         BY <3>2 DEF ExistsPath
     <2>3. QED
-      BY <2>1, <2>2 
+      BY <2>1, <2>2
   (*************************************************************************)
   (* Here's where we need Reachable0.                                      *)
   (*************************************************************************)
@@ -306,7 +306,7 @@ LEMMA Reachable2 ==
 
 (***************************************************************************)
 (* This lemma is quite obvious.                                            *)
-(***************************************************************************)                 
+(***************************************************************************)
 LEMMA Reachable3 ==  ReachableFrom({}) = {}
 BY DEF ExistsPath, ReachableFrom
 =============================================================================

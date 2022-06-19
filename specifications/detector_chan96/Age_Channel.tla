@@ -5,8 +5,8 @@ EXTENDS Integers, TLC
 
 CONSTANT Messages,    (* All messages sent by correct processes. *)
          Boxes        (* Every message is put into a box which has information
-                          about how long this message have been in transit. *) 
-       
+                          about how long this message have been in transit. *)
+
 
 VARIABLES inTransit,  (* All messages are in transit. *)
           inDelivery  (* inDelivery contains messages which are delivered
@@ -17,23 +17,23 @@ VARIABLES inTransit,  (* All messages are in transit. *)
     have been in transit. *)
 Pack_WaitingTime(msgs) == { [ content |-> m, age |-> 0 ] : m \in msgs }
 
-(*  - Unpack boxes to get messages. Ages is not delivered. 
+(*  - Unpack boxes to get messages. Ages is not delivered.
     - Those messages are delivered to a process in this transition. *)
-Unpack(boxes) == { m.content : m \in boxes } 
+Unpack(boxes) == { m.content : m \in boxes }
 
 (* Initialization *)
-Init ==  
+Init ==
   /\ inTransit = {}   (* No boxes are in transit. *)
   /\ inDelivery = {}  (* No messages are delivered. *)
 
 
 (* Pack a set msgs of messages with ages and put them in transit *)
-Pickup(msgs) == 
+Pickup(msgs) ==
   /\ inTransit' = inTransit \cup Pack_WaitingTime(msgs)
-  /\ inDelivery' = {}  
+  /\ inDelivery' = {}
 
 
-(*  - Non-deterministically choose some boxes and deliver associated messages to rcver. 
+(*  - Non-deterministically choose some boxes and deliver associated messages to rcver.
     - Messages which are delivered are removed from inTransit. *)
 Deliver(rcver) ==
   \E boxes \in SUBSET inTransit :
@@ -41,21 +41,21 @@ Deliver(rcver) ==
       /\ inDelivery' = Unpack(boxes)
       /\ inTransit' = inTransit \ boxes
 
-               
-(*  - Every message in transit attains a new age at every tick of the environmental clock. 
+
+(*  - Every message in transit attains a new age at every tick of the environmental clock.
     - Recall that we don't directly specify the environmental clock  in this encoding way.
-      At every tick of the global clock, we only increase ages of boxes in transit.  
-    - We can keep inDelivery unchanged. However, I set inDelivery' an empty set because it 
-      makes an execution path more (human) readable, at least for me.  *)               
+      At every tick of the global clock, we only increase ages of boxes in transit.
+    - We can keep inDelivery unchanged. However, I set inDelivery' an empty set because it
+      makes an execution path more (human) readable, at least for me.  *)
 AttainAge ==
-  /\ inTransit' = { [ content |-> package.content, age |-> package.age + 1 ]  : 
+  /\ inTransit' = { [ content |-> package.content, age |-> package.age + 1 ]  :
                         package \in inTransit }
-  /\ inDelivery' = {}  
-  
+  /\ inDelivery' = {}
+
 (* Type invariant for inTransit and inDelivery. *)
 TypeOK ==
   /\ inTransit \subseteq Boxes
-  /\ inDelivery \subseteq Messages 
+  /\ inDelivery \subseteq Messages
 
 
 =============================================================================

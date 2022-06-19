@@ -1,8 +1,8 @@
------------------------------ MODULE ProtoReals ----------------------------- 
+----------------------------- MODULE ProtoReals -----------------------------
 EXTENDS Peano
 
-IsModelOfReals(R, Plus, Times, Leq) == 
-  LET IsAbelianGroup(G, Id, _+_) == 
+IsModelOfReals(R, Plus, Times, Leq) ==
+  LET IsAbelianGroup(G, Id, _+_) ==
         /\ Id \in G
         /\ \A a, b \in G : a + b \in G
         /\ \A a \in G : Id + a = a
@@ -20,17 +20,17 @@ IsModelOfReals(R, Plus, Times, Leq) ==
       /\ \A n \in Nat : Succ[n] = n + Succ[Zero]
       /\ IsAbelianGroup(R, Zero, +)
       /\ IsAbelianGroup(R \ {Zero}, Succ[Zero], *)
-      /\ \A a, b, c \in R : a * (b + c) = (a * b) + (a * c) 
+      /\ \A a, b, c \in R : a * (b + c) = (a * b) + (a * c)
       /\ \A a, b \in R : /\ (a \leq b) \/ (b \leq a)
                          /\ (a \leq b) /\ (b \leq a) <=> (a = b)
       /\ \A a, b, c \in R : /\ (a \leq b) /\ (b \leq c) => (a \leq c)
-                            /\ (a \leq b) => 
+                            /\ (a \leq b) =>
                                  /\ (a + c) \leq (b + c)
                                  /\ (Zero \leq c) => (a * c) \leq (b * c)
       /\ \A S \in SUBSET R :
            LET SBound(a) == \A s \in S : s \leq a
-           IN  (\E a \in R : SBound(a)) => 
-                  (\E sup \in R : /\ SBound(sup) 
+           IN  (\E a \in R : SBound(a)) =>
+                  (\E sup \in R : /\ SBound(sup)
                                   /\ \A a \in R : SBound(a) => (sup\leq a))
 
 THEOREM \E R, Plus, Times, Leq : IsModelOfReals(R, Plus, Times, Leq)
@@ -53,19 +53,19 @@ a \leq b == CASE (a \in Real) /\ (b \in Real) -> <<a, b>> \in RM.Leq
 
 a - b == CASE (a \in Real) /\ (b \in Real)  -> CHOOSE c \in Real : c + b = a
            [] (a \in Real) /\ (b = Infinity)      -> MinusInfinity
-           [] (a \in Real) /\ (b = MinusInfinity) -> Infinity 
+           [] (a \in Real) /\ (b = MinusInfinity) -> Infinity
 
 a / b == CHOOSE c \in Real : a = b * c
 
 Int  == Nat \cup {Zero - n : n \in Nat}
 -----------------------------------------------------------------------------
-a ^ b == 
+a ^ b ==
   LET RPos == {r \in Real \ {Zero} : Zero \leq r}
-      exp  == CHOOSE f \in [(RPos \X Real) \cup (Real \X RPos) 
+      exp  == CHOOSE f \in [(RPos \X Real) \cup (Real \X RPos)
                                    \cup ((Real \ {Zero}) \X Int) -> Real] :
                /\ \A r \in Real :
                     /\ f[r, Succ[Zero]] = r
-                    /\ \A m, n \in Int : (r # Zero) => 
+                    /\ \A m, n \in Int : (r # Zero) =>
                                            (f[r, m+n] = f[r, m] * f[r, n])
                /\ \A r \in RPos :
                     /\ f[Zero, r] = Zero

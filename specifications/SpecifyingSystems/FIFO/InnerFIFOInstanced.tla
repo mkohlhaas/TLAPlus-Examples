@@ -32,7 +32,7 @@ VARIABLES in, out, q
 InChan_TypeInvariant  ==  in \in [val : Message,  rdy : {0, 1},  ack : {0, 1}]
 
 InChan_Init  ==  /\ InChan_TypeInvariant
-                 /\ in.ack = in.rdy 
+                 /\ in.ack = in.rdy
 
 InChan_Send(d) ==  /\ in.rdy = in.ack
                    /\ in' = [in EXCEPT !.val = d, !.rdy = 1 - @]
@@ -52,7 +52,7 @@ InChan_Spec  ==  InChan_Init /\ [][InChan_Next]_in
 OutChan_TypeInvariant  ==  out \in [val : Message,  rdy : {0, 1},  ack : {0, 1}]
 
 OutChan_Init  ==  /\ OutChan_TypeInvariant
-                  /\ out.ack = out.rdy 
+                  /\ out.ack = out.rdy
 
 OutChan_Send(d) ==  /\ out.rdy = out.ack
                     /\ out' = [out EXCEPT !.val = d, !.rdy = 1 - @]
@@ -94,7 +94,7 @@ RRcv == /\ OutChan_Rcv          \* Receive message from channel `out'.
 Next == \/ \E msg \in Message : SSend(msg)
         \/ BufRcv
         \/ BufSend
-        \/ RRcv 
+        \/ RRcv
 
 Spec == Init /\ [][Next]_<<in, out, q>>
 -----------------------------------------------------------------------------

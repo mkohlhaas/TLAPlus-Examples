@@ -71,8 +71,8 @@ Partitions(seq, wt) ==
 (* For convenience, we define Weighs(seq, wt) to be true if the elements   *)
 (* of the sequence seq sum to wt.                                          *)
 (***************************************************************************)
-Weighs(seq, wt) == 
-  \E coef \in [1..N -> -1..1] : 
+Weighs(seq, wt) ==
+  \E coef \in [1..N -> -1..1] :
       SeqSum([i \in 1..N |-> coef[i] * seq[i]]) = wt
 
 (***************************************************************************)
@@ -81,8 +81,8 @@ Weighs(seq, wt) ==
 (* just create a model that assigns values to W and N and run TLC.         *)
 (***************************************************************************)
 ASSUME \/ \E p \in Partitions(<< >>, W) :
-              IF \A wt \in 1..W : Weighs(p, wt) 
-                THEN PrintT(p) 
+              IF \A wt \in 1..W : Weighs(p, wt)
+                THEN PrintT(p)
                 ELSE FALSE
        \/ PrintT("No solution")
 

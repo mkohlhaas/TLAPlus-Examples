@@ -15,7 +15,7 @@ LOCAL INSTANCE Integers
 \* startup:
 \*
 \* @!@!@STARTMSG 2168:0 @!@!@
-\* Loading And operator override from /Hanoi.toolbox/Model_1/Bits.class with signature: 
+\* Loading And operator override from /Hanoi.toolbox/Model_1/Bits.class with signature:
 \* <Java Method: public static tlc2.value.IntValue Bits.And(tlc2.value.IntValue,tlc2.value.IntValue)>.
 \* @!@!@ENDMSG 2168 @!@!@
 \*
@@ -38,14 +38,14 @@ LOCAL INSTANCE Integers
 \* it as a Java class object. Bits : Unsupported major.minor version 52.0
 \*
 \* compile Bits.java with a Java version identical to the Toolbox's VM.
-\* 
+\*
 \*
 \* https://en.wikipedia.org/wiki/Bitwise_operation#Mathematical_equivalents
 RECURSIVE And(_,_,_,_)
 LOCAL And(x,y,n,m) == LET exp == 2^n
-                IN IF m = 0 
+                IN IF m = 0
                    THEN 0
-                   ELSE exp * ((x \div exp) % 2) * ((y \div exp) % 2) 
+                   ELSE exp * ((x \div exp) % 2) * ((y \div exp) % 2)
                         + And(x,y,n+1,m \div 2)
 
 (***************************************************************************)

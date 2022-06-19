@@ -26,7 +26,7 @@ Init == /\ input \in [Proc -> Inputs]
         /\ dblock = [p \in Proc |-> InitDB ]
         /\ disksWritten = [p \in Proc |-> {}]
         /\ blocksRead = [p \in Proc |-> [d \in Disk |-> {}]]
-       
+
 hasRead (p, d , q) == \E br \in blocksRead [p][d ] : br .proc = q
 
 allBlocksRead(p) ==
@@ -54,7 +54,7 @@ Phase1or2Write(p, d) ==
 Phase1or2Read (p, d, q) ==
   /\ d \in disksWritten[p]
   /\ IF disk [d ][q].mbal < dblock [p].mbal
-     THEN /\ blocksRead' = 
+     THEN /\ blocksRead' =
                 [blocksRead EXCEPT
                     ![p][d ] = @ \cup {[block |-> disk [d ][q], proc |-> q]}]
           /\ UNCHANGED <<input, output, disk , phase, dblock , disksWritten>>
@@ -97,7 +97,7 @@ Phase0Read(p, d) ==
   /\ blocksRead' = [blocksRead EXCEPT
                         ![p][d ] = @ \cup {[block |-> disk [d][p], proc |-> p]}]
   /\ UNCHANGED <<input, output, disk , phase, dblock , disksWritten>>
-  
+
 
 EndPhase0(p) ==
   /\ phase[p] = 0

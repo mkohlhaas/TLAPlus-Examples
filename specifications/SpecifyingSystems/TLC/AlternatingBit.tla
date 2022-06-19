@@ -1,13 +1,13 @@
 --------------------------- MODULE AlternatingBit ---------------------------
 EXTENDS Naturals, Sequences
 CONSTANTS Data
-VARIABLES msgQ, 
-          ackQ, 
-          sBit, 
-          sAck, 
-          rBit, 
-          sent, 
-          rcvd  
+VARIABLES msgQ,
+          ackQ,
+          sBit,
+          sAck,
+          rBit,
+          sent,
+          rcvd
 -----------------------------------------------------------------------------
 ABInit == /\ msgQ = << >>
           /\ ackQ = << >>
@@ -25,23 +25,23 @@ ABTypeInv == /\ msgQ \in Seq({0,1} \X Data)
              /\ sent \in Data
              /\ rcvd \in Data
 -----------------------------------------------------------------------------
-SndNewValue(d) == 
+SndNewValue(d) ==
   /\ sAck = sBit
   /\ sent' = d
   /\ sBit' = 1 - sBit
-  /\ msgQ' = Append(msgQ, <<sBit', d>>) 
+  /\ msgQ' = Append(msgQ, <<sBit', d>>)
   /\ UNCHANGED <<ackQ, sAck, rBit, rcvd>>
 
-ReSndMsg == 
+ReSndMsg ==
   /\ sAck # sBit
   /\ msgQ' = Append(msgQ, <<sBit, sent>>)
   /\ UNCHANGED <<ackQ, sBit, sAck, rBit, sent, rcvd>>
 
-RcvMsg == 
+RcvMsg ==
   /\ msgQ # <<>>
   /\ msgQ' = Tail(msgQ)
-  /\ rBit' = Head(msgQ)[1] 
-  /\ rcvd' = Head(msgQ)[2] 
+  /\ rBit' = Head(msgQ)[1]
+  /\ rcvd' = Head(msgQ)[2]
   /\ UNCHANGED <<ackQ, sBit, sAck, sent>>
 
 SndAck == /\ ackQ' = Append(ackQ, rBit)
@@ -52,10 +52,10 @@ RcvAck == /\ ackQ # << >>
           /\ sAck' = Head(ackQ)
           /\ UNCHANGED <<msgQ, sBit, rBit, sent, rcvd>>
 
-Lose(q) == 
+Lose(q) ==
    /\ q # << >>
-   /\ \E i \in 1..Len(q) : 
-          q' = [j \in 1..(Len(q)-1) |-> IF j < i THEN q[j] 
+   /\ \E i \in 1..Len(q) :
+          q' = [j \in 1..(Len(q)-1) |-> IF j < i THEN q[j]
                                                  ELSE q[j+1] ]
    /\ UNCHANGED <<sBit, sAck, rBit, sent, rcvd>>
 
@@ -63,14 +63,14 @@ LoseMsg == Lose(msgQ) /\ UNCHANGED ackQ
 
 LoseAck == Lose(ackQ) /\ UNCHANGED msgQ
 
-ABNext == \/  \E d \in Data : SndNewValue(d) 
-          \/  ReSndMsg \/ RcvMsg \/ SndAck \/ RcvAck 
-          \/  LoseMsg \/ LoseAck 
+ABNext == \/  \E d \in Data : SndNewValue(d)
+          \/  ReSndMsg \/ RcvMsg \/ SndAck \/ RcvAck
+          \/  LoseMsg \/ LoseAck
 -----------------------------------------------------------------------------
 abvars == << msgQ, ackQ, sBit, sAck, rBit, sent, rcvd>>
 
-ABFairness == /\ WF_abvars(ReSndMsg) /\ WF_abvars(SndAck)   
-              /\ SF_abvars(RcvMsg) /\ SF_abvars(RcvAck) 
+ABFairness == /\ WF_abvars(ReSndMsg) /\ WF_abvars(SndAck)
+              /\ SF_abvars(RcvMsg) /\ SF_abvars(RcvAck)
 -----------------------------------------------------------------------------
 ABSpec == ABInit /\ [][ABNext]_abvars /\ ABFairness
 -----------------------------------------------------------------------------

@@ -19,7 +19,7 @@
 (*   - The parallel algorithm has terminated if and only if Misra's        *)
 (*     algorithm has.                                                      *)
 (***************************************************************************)
-EXTENDS Reachability, Integers, FiniteSets 
+EXTENDS Reachability, Integers, FiniteSets
 
 (***************************************************************************)
 (* The Misra algorithm's constants Nodes and Succ are imported from module *)
@@ -65,13 +65,13 @@ process-local variables u and toVroot don't matter.  It's always a good
 idea to make them "type correct", and the initial value of toVroot is
 an obvious choice that also makes the refinement mapping a little
 simpler.
- 
+
 
 --algorithm ParallelReachability {
   variables marked = {}, vroot = {Root};
-  fair process (p \in Procs) 
+  fair process (p \in Procs)
     variables u = Root, toVroot = {} ;
-    { a: while (vroot /= {}) 
+    { a: while (vroot /= {})
        {    with (v \in vroot) { u := v };
          b: if (u \notin marked)
               {    marked := marked \cup {u};
@@ -82,7 +82,7 @@ simpler.
                          toVroot := toVroot \ {w} }
                      }
                }
-             else { vroot := vroot \ {u} }     
+             else { vroot := vroot \ {u} }
        }
     }
 }
@@ -174,7 +174,7 @@ Inv == /\ marked \in SUBSET Nodes
        /\ pc \in [Procs -> {"a", "b", "c", "Done"}]
        /\ \A q \in Procs : /\ (pc[q] \in {"a", "b", "Done"}) => (toVroot[q] = {})
                            /\ (pc[q] = "b") => (u[q] \in vroot \cup marked)
-                           
+
 (***************************************************************************)
 (* To define a refinement mapping from states of the parallel algorithm to *)
 (* states of Misra's algorithm, we must define the expressions in this     *)
@@ -190,7 +190,7 @@ Inv == /\ marked \in SUBSET Nodes
 (* elements of Succ[u] from toVroot must leave vrootBar unchanged.  (Those *)
 (* steps implement stuttering steps of Misra's algorithm.) This leads us   *)
 (* to the following definition of vrootBar.                                *)
-(***************************************************************************) 
+(***************************************************************************)
 vrootBar == vroot \cup UNION {toVroot[i] : i \in Procs}
 
 (***************************************************************************)
@@ -216,7 +216,7 @@ R == INSTANCE Reachable WITH vroot <- vrootBar, pc <- pcBar
 (* it, use models with behavior specification spec that check the temporal *)
 (* property R!Spec.)                                                       *)
 (***************************************************************************)
-THEOREM Spec => R!Spec       
+THEOREM Spec => R!Spec
 
 (***************************************************************************)
 (* By the definition of formula Spec of module Reachable, this theorem     *)

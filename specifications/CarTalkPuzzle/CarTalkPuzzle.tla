@@ -21,7 +21,7 @@
 (* such as + and =< (less than or equals).  It also defines the operator   *)
 (* ..  so that i..j is the set of all integers k with i =< k =< j.         *)
 (***************************************************************************)
-EXTENDS Integers 
+EXTENDS Integers
 
 (***************************************************************************)
 (* For generality, I solve the problem of breaking an N pound stone into P *)
@@ -82,8 +82,8 @@ IsRepresentation(w, B, S, T) ==    S \cap T = {}
 (*                                                                         *)
 (* SUBSET S is the set of all subsets of S (the power set of S).           *)
 (***************************************************************************)
-IsSolution(B) ==  \A w \in 1..N : 
-                     \E S, T \in SUBSET (1..P) : IsRepresentation(w, B, S, T) 
+IsSolution(B) ==  \A w \in 1..N :
+                     \E S, T \in SUBSET (1..P) : IsRepresentation(w, B, S, T)
 
 (***************************************************************************)
 (* I define AllSolutions to be the set of all breaks B that solve the      *)
@@ -152,8 +152,8 @@ ExpandSolutions ==
   LET PiecesFor(w, B) == CHOOSE ST \in (SUBSET (1..P)) \X (SUBSET (1..P)) :
                            IsRepresentation(w, B, ST[1], ST[2])
       Image(S, B) == {B[x] : x \in S}
-      SolutionFor(w, B) == << w, 
-                              Image(PiecesFor(w, B)[1], B), 
+      SolutionFor(w, B) == << w,
+                              Image(PiecesFor(w, B)[1], B),
                               Image(PiecesFor(w, B)[2], B) >>
   IN  { [w \in 1..N |-> SolutionFor(w, B)] : B \in AllSolutions }
 ===============================================================================

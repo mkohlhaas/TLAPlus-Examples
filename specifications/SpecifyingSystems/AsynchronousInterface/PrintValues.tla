@@ -1,4 +1,4 @@
----------------------------- MODULE PrintValues ---------------------------- 
+---------------------------- MODULE PrintValues ----------------------------
 
 (***************************************************************************)
 (* This module illustrates how to use TLC to calculate and print the       *)
@@ -27,7 +27,7 @@ EXTENDS Naturals, TLC
   (* arithmetic operators from the module Naturals and the definitions     *)
   (* from TLC, including that of Print.                                    *)
   (*************************************************************************)
-  
+
 
 (***************************************************************************)
 (* Instead of having to type Print(exp, TRUE), we could just define        *)

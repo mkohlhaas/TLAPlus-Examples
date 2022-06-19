@@ -43,7 +43,7 @@ Message == {AckMessage, RelMessage} \union {ReqMessage(c) : c \in Clock}
 
 (***************************************************************************)
 (* The type correctness predicate.                                         *)
-(***************************************************************************)  
+(***************************************************************************)
 TypeOK ==
      (* clock[p] is the local clock of process p *)
   /\ clock \in [Proc -> Clock]
@@ -59,7 +59,7 @@ TypeOK ==
 
 (***************************************************************************)
 (* The initial state predicate.                                            *)
-(***************************************************************************) 
+(***************************************************************************)
 Init ==
   /\ clock = [p \in Proc |-> 1]
   /\ req = [p \in Proc |-> [q \in Proc |-> 0]]
@@ -77,7 +77,7 @@ beats(p,q) ==
   \/ req[p][q] = 0
   \/ req[p][p] < req[p][q]
   \/ req[p][p] = req[p][q] /\ p < q
-  
+
 (***************************************************************************)
 (* Broadcast a message: send it to all processes except the sender.        *)
 (***************************************************************************)
@@ -110,7 +110,7 @@ ReceiveRequest(p,q) ==
 
 (***************************************************************************)
 (* Process p receives an acknowledgement from q.                           *)
-(***************************************************************************)      
+(***************************************************************************)
 ReceiveAck(p,q) ==
   /\ network[q][p] # << >>
   /\ LET m == Head(network[q][p])
@@ -122,12 +122,12 @@ ReceiveAck(p,q) ==
 (**************************************************************************)
 (* Process p enters the critical section.                                 *)
 (**************************************************************************)
-Enter(p) == 
+Enter(p) ==
   /\ ack[p] = Proc
   /\ \A q \in Proc \ {p} : beats(p,q)
   /\ crit' = crit \union {p}
   /\ UNCHANGED <<clock, req, ack, network>>
-  
+
 (***************************************************************************)
 (* Process p exits the critical section and notifies other processes.      *)
 (***************************************************************************)
@@ -138,7 +138,7 @@ Exit(p) ==
   /\ req' = [req EXCEPT ![p][p] = 0]
   /\ ack' = [ack EXCEPT ![p] = {}]
   /\ UNCHANGED clock
- 
+
 (***************************************************************************)
 (* Process p receives a release notification from q.                       *)
 (***************************************************************************)
@@ -156,7 +156,7 @@ ReceiveRelease(p,q) ==
 
 Next ==
   \/ \E p \in Proc : Request(p) \/ Enter(p) \/ Exit(p)
-  \/ \E p \in Proc : \E q \in Proc \ {p} : 
+  \/ \E p \in Proc : \E q \in Proc \ {p} :
         ReceiveRequest(p,q) \/ ReceiveAck(p,q) \/ ReceiveRelease(p,q)
 
 vars == <<req, network, clock, ack, crit>>

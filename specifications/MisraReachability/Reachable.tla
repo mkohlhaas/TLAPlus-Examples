@@ -55,10 +55,10 @@ node and does the following:
   IF v is not in in `marked'
     THEN it performs the same action as the obvious algorithm except:
          (1) it doesn't remove v from vroot, and
-         (2) it adds all nodes in Succ[v] to vroot, not just the ones 
-             not in `marked'.  
+         (2) it adds all nodes in Succ[v] to vroot, not just the ones
+             not in `marked'.
     ELSE it removes v from vroot
-    
+
  Here is the algorithm's PlusCal code.
 
 
@@ -131,7 +131,7 @@ TypeOK == /\ marked \in SUBSET Nodes
   (* type-correctness invariant.)                                          *)
   (*************************************************************************)
 
-Inv1 == /\ TypeOK  
+Inv1 == /\ TypeOK
         /\ \A n \in marked : Succ[n] \subseteq (marked \cup vroot)
   (*************************************************************************)
   (* The second conjunct of Inv1 is invariant because each element of      *)
@@ -190,7 +190,7 @@ Inv3 == Reachable = marked \cup ReachableFrom(vroot)
 (* then `marked' equals Reachable.  The algorithm has terminated when pc   *)
 (* equals "Done", so this theorem asserts partial correctness.             *)
 (***************************************************************************)
-THEOREM Spec => []((pc = "Done") => (marked = Reachable)) 
+THEOREM Spec => []((pc = "Done") => (marked = Reachable))
   (*************************************************************************)
   (* TypeOK implies (pc = "Done") => (vroot = {}).  Since,                 *)
   (* ReachableFrom({}) equals {}, Inv3 implies                             *)
@@ -227,7 +227,7 @@ THEOREM  ASSUME IsFiniteSet(Reachable)
   (* impossible because `marked' is a finite set.  Hence, we have the      *)
   (* required contradiction.                                               *)
   (*************************************************************************)
- 
+
  (**************************************************************************)
  (* TLC can quickly check these two theorems on models containing a half   *)
  (* dozen nodes.                                                           *)
@@ -238,4 +238,4 @@ THEOREM  ASSUME IsFiniteSet(Reachable)
 \* Last modified Wed Apr 17 12:21:22 PDT 2019 by lamport
 \* Created Thu Apr 04 10:11:51 PDT 2019 by lamport
 
-    
+

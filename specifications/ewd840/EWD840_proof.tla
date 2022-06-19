@@ -61,7 +61,7 @@ THEOREM Safety == Spec => []TerminationDetection
 (* is a more detailed, hierarchical proof of that same implication.        *)
 (***************************************************************************)
 LEMMA Inv => TerminationDetection
-<1>1. SUFFICES ASSUME tpos = 0, tcolor = "white", 
+<1>1. SUFFICES ASSUME tpos = 0, tcolor = "white",
                       color[0] = "white", ~ active[0],
                       Inv
                PROVE  \A i \in Node : ~ active[i]

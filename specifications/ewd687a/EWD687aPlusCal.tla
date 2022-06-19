@@ -13,7 +13,7 @@
 (***************************************************************************)
 EXTENDS Integers, FiniteSets, TLC
 
-CONSTANT 
+CONSTANT
   Node,        \* the set of active nodes
   initiator,   \* initiator node
   maxMsg       \* maximum number of pending messages for bounding the state space
@@ -23,7 +23,7 @@ ASSUME /\ IsFiniteSet(Node)
 
 none == CHOOSE x : x \notin Node
 
-(* 
+(*
 --algorithm DS {
   variable
     (* has termination been detected? *)
@@ -42,7 +42,7 @@ none == CHOOSE x : x \notin Node
     pendingAck(net, to) == net[to].ack > 0
     receiveAck(net, to) == [net EXCEPT ![to].ack = @-1]
   }
-  fair process (node \in Node) 
+  fair process (node \in Node)
     variables active = (self = initiator),
               parent = IF self = initiator THEN self ELSE none,
               activeSons = 0;
@@ -149,10 +149,10 @@ Next == (\E self \in Node: node(self))
 Spec == /\ Init /\ [][Next]_vars
         /\ \A self \in Node : WF_vars(node(self))
 
-\* END TRANSLATION 
+\* END TRANSLATION
 
 StateConstraint ==
-  /\ \A n \in Node : network[n].ack <= 2 
+  /\ \A n \in Node : network[n].ack <= 2
   /\ \A m,n \in Node : network[m].msg[n] <= maxMsg
 
 TypeOK ==

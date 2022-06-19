@@ -30,7 +30,7 @@ TypeInvariance == []HCini
   (* stated in this way to show you another way of telling TLC to check an *)
   (* invariant.                                                            *)
   (*************************************************************************)
-  
+
 -----------------------------------------------------------------------------
 THEOREM  LSpec => AlwaysTick /\ AllTimes /\ TypeInvariance
 =============================================================================

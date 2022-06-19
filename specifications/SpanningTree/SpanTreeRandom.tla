@@ -11,7 +11,7 @@ EXTENDS Integers, FiniteSets, TLC
 
 CONSTANTS Nodes, Root, MaxCardinality
 
-Edges == 
+Edges ==
   UNION { {{n, m} : m \in RandomElement(SUBSET (Nodes\{n}))} : n \in Nodes }
   (*************************************************************************)
   (* To understand this definition let's look at its subformulas, from the *)
@@ -43,7 +43,7 @@ Edges ==
 ASSUME /\ Root \in Nodes
        /\ MaxCardinality \in Nat
        /\ MaxCardinality >= Cardinality(Nodes)
-       
+
 VARIABLES mom, dist
 vars == <<mom, dist>>
 
@@ -55,9 +55,9 @@ TypeOK == /\ mom \in [Nodes -> Nodes]
 
 Init == /\ mom = [n \in Nodes |-> n]
         /\ dist = [n \in Nodes |-> IF n = Root THEN 0 ELSE MaxCardinality]
-        
+
 Next == \E n \in Nodes :
-          \E m \in Nbrs(n) : 
+          \E m \in Nbrs(n) :
              /\ dist[m] < 1 + dist[n]
              /\ \E d \in (dist[m]+1) .. (dist[n] - 1) :
                     /\ dist' = [dist EXCEPT ![n] = d]
@@ -65,12 +65,12 @@ Next == \E n \in Nodes :
 
 Spec == Init /\ [][Next]_vars /\ WF_vars(Next)
 -----------------------------------------------------------------------------
-PostCondition == 
+PostCondition ==
   \A n \in Nodes :
-    \/ /\ n = Root 
+    \/ /\ n = Root
        /\ dist[n] = 0
        /\ mom[n] = n
-    \/ /\ dist[n] = MaxCardinality 
+    \/ /\ dist[n] = MaxCardinality
        /\ mom[n] = n
        /\ \A m \in Nbrs(n) : dist[m] = MaxCardinality
     \/ /\ dist[n] \in 1..(MaxCardinality-1)

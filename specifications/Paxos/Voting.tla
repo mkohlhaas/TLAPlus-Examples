@@ -1,20 +1,20 @@
-------------------------------- MODULE Voting ------------------------------- 
+------------------------------- MODULE Voting -------------------------------
 (***************************************************************************)
 (* This is a high-level algorithm in which a set of processes              *)
 (* cooperatively choose a value.                                           *)
 (***************************************************************************)
-EXTENDS Integers 
+EXTENDS Integers
 -----------------------------------------------------------------------------
 CONSTANT Value,     \* The set of choosable values.
          Acceptor,  \* A set of processes that will choose a value.
-         Quorum     \* The set of "quorums", where a quorum" is a 
+         Quorum     \* The set of "quorums", where a quorum" is a
                     \*   "large enough" set of acceptors
 
 (***************************************************************************)
 (* Here are the assumptions we make about quorums.                         *)
 (***************************************************************************)
 ASSUME QuorumAssumption == /\ \A Q \in Quorum : Q \subseteq Acceptor
-                           /\ \A Q1, Q2 \in Quorum : Q1 \cap Q2 # {}  
+                           /\ \A Q1, Q2 \in Quorum : Q1 \cap Q2 # {}
 
 THEOREM QuorumNonEmpty == \A Q \in Quorum : Q # {}
 -----------------------------------------------------------------------------
@@ -54,8 +54,8 @@ VotedFor(a, b, v) == <<b, v>> \in votes[a]
   (*************************************************************************)
   (* True iff acceptor a has voted for v in ballot b.                      *)
   (*************************************************************************)
-  
-ChosenAt(b, v) == \E Q \in Quorum : 
+
+ChosenAt(b, v) == \E Q \in Quorum :
                      \A a \in Q : VotedFor(a, b, v)
   (*************************************************************************)
   (* True iff a quorum of acceptors have all voted for v in ballot b.      *)
@@ -65,8 +65,8 @@ chosen == {v \in Value : \E b \in Ballot : ChosenAt(b, v)}
   (*************************************************************************)
   (* The set of values that have been chosen.                              *)
   (*************************************************************************)
-  
-DidNotVoteAt(a, b) == \A v \in Value : ~ VotedFor(a, b, v) 
+
+DidNotVoteAt(a, b) == \A v \in Value : ~ VotedFor(a, b, v)
 
 CannotVoteAt(a, b) == /\ maxBal[a] > b
                       /\ DidNotVoteAt(a, b)
@@ -76,7 +76,7 @@ CannotVoteAt(a, b) == /\ maxBal[a] > b
   (* in ballot b.                                                          *)
   (*************************************************************************)
 
-NoneOtherChoosableAt(b, v) == 
+NoneOtherChoosableAt(b, v) ==
    \E Q \in Quorum :
      \A a \in Q : VotedFor(a, b, v) \/ CannotVoteAt(a, b)
   (*************************************************************************)
@@ -93,38 +93,38 @@ SafeAt(b, v) == \A c \in 0..(b-1) : NoneOtherChoosableAt(c, v)
 THEOREM AllSafeAtZero == \A v \in Value : SafeAt(0, v)
 -----------------------------------------------------------------------------
 THEOREM ChoosableThm ==
-          \A b \in Ballot, v \in Value : 
+          \A b \in Ballot, v \in Value :
              ChosenAt(b, v) => NoneOtherChoosableAt(b, v)
 -----------------------------------------------------------------------------
 VotesSafe == \A a \in Acceptor, b \in Ballot, v \in Value :
                  VotedFor(a, b, v) => SafeAt(b, v)
 
-OneVote == \A a \in Acceptor, b \in Ballot, v, w \in Value : 
+OneVote == \A a \in Acceptor, b \in Ballot, v, w \in Value :
               VotedFor(a, b, v) /\ VotedFor(a, b, w) => (v = w)
-OneValuePerBallot ==  
-    \A a1, a2 \in Acceptor, b \in Ballot, v1, v2 \in Value : 
+OneValuePerBallot ==
+    \A a1, a2 \in Acceptor, b \in Ballot, v1, v2 \in Value :
        VotedFor(a1, b, v1) /\ VotedFor(a2, b, v2) => (v1 = v2)
 -----------------------------------------------------------------------------
 THEOREM OneValuePerBallot => OneVote
 -----------------------------------------------------------------------------
 THEOREM VotesSafeImpliesConsistency ==
-          /\ TypeOK 
+          /\ TypeOK
           /\ VotesSafe
           /\ OneVote
           => \/ chosen = {}
              \/ \E v \in Value : chosen = {v}
 -----------------------------------------------------------------------------
-ShowsSafeAt(Q, b, v) == 
+ShowsSafeAt(Q, b, v) ==
   /\ \A a \in Q : maxBal[a] \geq b
-  /\ \E c \in -1..(b-1) : 
+  /\ \E c \in -1..(b-1) :
       /\ (c # -1) => \E a \in Q : VotedFor(a, c, v)
       /\ \A d \in (c+1)..(b-1), a \in Q : DidNotVoteAt(a, d)
 -----------------------------------------------------------------------------
-THEOREM ShowsSafety == 
+THEOREM ShowsSafety ==
           TypeOK /\ VotesSafe /\ OneValuePerBallot =>
              \A Q \in Quorum, b \in Ballot, v \in Value :
                ShowsSafeAt(Q, b, v) => SafeAt(b, v)
- 
+
 -----------------------------------------------------------------------------
 (***************************************************************************)
 (* We now write the specification.  The initial condition is               *)
@@ -156,7 +156,7 @@ IncreaseMaxBal(a, b) ==
 VoteFor(a, b, v) ==
     /\ maxBal[a] \leq b
     /\ \A vt \in votes[a] : vt[1] # b
-    /\ \A c \in Acceptor \ {a} : 
+    /\ \A c \in Acceptor \ {a} :
          \A vt \in votes[c] : (vt[1] = b) => (vt[2] = v)
     /\ \E Q \in Quorum : ShowsSafeAt(Q, b, v)
     /\ votes' = [votes EXCEPT ![a] = @ \cup {<<b, v>>}]
@@ -166,7 +166,7 @@ VoteFor(a, b, v) ==
 (***************************************************************************)
 (* The next-state action and the invariant.                                *)
 (***************************************************************************)
-Next  ==  \E a \in Acceptor, b \in Ballot : 
+Next  ==  \E a \in Acceptor, b \in Ballot :
             \/ IncreaseMaxBal(a, b)
             \/ \E v \in Value : VoteFor(a, b, v)
 
@@ -186,7 +186,7 @@ THEOREM Invariance == Spec => []Inv
 (***************************************************************************)
 C == INSTANCE Consensus
 
-THEOREM Spec => C!Spec 
+THEOREM Spec => C!Spec
 <1>1. Inv /\ Init => C!Init
 <1>2. Inv /\ [Next]_<<votes, maxBal>> => [C!Next]_chosen
 <1>3. QED

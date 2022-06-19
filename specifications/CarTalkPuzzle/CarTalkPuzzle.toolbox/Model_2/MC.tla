@@ -2,17 +2,17 @@
 EXTENDS CarTalkPuzzle, TLC
 
 \* CONSTANT definitions @modelParameterConstants:0N
-const_131965207585635000 == 
+const_131965207585635000 ==
 15
 ----
 
 \* CONSTANT definitions @modelParameterConstants:1P
-const_131965207587136000 == 
+const_131965207587136000 ==
 4
 ----
 
 \* Constant expression definition @modelExpressionEval
-const_expr_131965207588737000 == 
+const_expr_131965207588737000 ==
 AllSolutions
 ----
 

@@ -96,13 +96,13 @@ EXTENDS Integers, TLAPS
 (* We first declare N to be the number of processes, and we assume that N  *)
 (* is a natural number.                                                    *)
 (***************************************************************************)
-CONSTANT N 
+CONSTANT N
 ASSUME N \in Nat
 
 (***************************************************************************)
 (* We define Procs to be the set {1, 2, ...  , N} of processes.            *)
 (***************************************************************************)
-Procs == 1..N 
+Procs == 1..N
 
 (***************************************************************************)
 (* \prec is defined to be the lexicographical less-than relation on pairs  *)
@@ -117,15 +117,15 @@ a \prec b == \/ a[1] < b[1]
 { variable num = [i \in Procs |-> 0], flag = [i \in Procs |-> FALSE];
   fair process (p \in Procs)
     variables unchecked = {}, max = 0, nxt = 1, previous = -1 ;
-    { ncs:- while (TRUE) 
+    { ncs:- while (TRUE)
             { e1:   either { flag[self] := ~ flag[self] ;
                              goto e1 }
                     or     { flag[self] := TRUE;
                              unchecked := Procs \ {self} ;
                              max := 0
-                           } ;     
-              e2:   while (unchecked # {}) 
-                      { with (i \in unchecked) 
+                           } ;
+              e2:   while (unchecked # {})
+                      { with (i \in unchecked)
                           { unchecked := unchecked \ {i};
                             if (num[i] > max) { max := num[i] }
                           }
@@ -138,28 +138,28 @@ a \prec b == \/ a[1] < b[1]
                     or     { flag[self] := FALSE;
                                unchecked := IF num[self] = 1
                                               THEN 1..(self-1)
-                                              ELSE Procs \ {self} 
+                                              ELSE Procs \ {self}
                            } ;
-              w1:   while (unchecked # {}) 
+              w1:   while (unchecked # {})
                       {     with (i \in unchecked) { nxt := i };
                             await ~ flag[nxt];
                             previous := -1 ;
                         w2: if ( \/ num[nxt] = 0
                                  \/ <<num[self], self>> \prec <<num[nxt], nxt>>
-                                 \/  /\ previous # -1 
+                                 \/  /\ previous # -1
                                      /\ num[nxt] # previous)
                                 { unchecked := unchecked \ {nxt};
                                   if (unchecked = {}) {goto cs}
-                                  else {goto w1} 
+                                  else {goto w1}
                                 }
                               else { previous := num[nxt] ;
                                      goto w2 }
-                                                           
+
                       } ;
               cs:   skip ;  \* the critical section;
               exit: either { with (k \in Nat) { num[self] := k } ;
                              goto exit }
-                    or     { num[self] := 0 } 
+                    or     { num[self] := 0 }
             }
     }
 }
@@ -298,7 +298,7 @@ TypeOK == /\ num \in [Procs -> Nat]
           /\ nxt \in [Procs -> Procs]
           /\ pc \in [Procs -> {"ncs", "e1", "e2", "e3",
                                "e4", "w1", "w2", "cs", "exit"}]
-          /\ previous \in [Procs -> Nat \cup {-1}]             
+          /\ previous \in [Procs -> Nat \cup {-1}]
 
 (***************************************************************************)
 (* Before(i, j) is a condition that implies that num[i] > 0 and, if j is   *)
@@ -326,12 +326,12 @@ Before(i,j) == /\ num[i] > 0
 
 (***************************************************************************)
 (* Inv is the complete inductive invariant.                                *)
-(***************************************************************************)  
-Inv == /\ TypeOK 
-       /\ \A i \in Procs : 
+(***************************************************************************)
+Inv == /\ TypeOK
+       /\ \A i \in Procs :
              /\ (pc[i] \in {"ncs", "e1", "e2"}) => (num[i] = 0)
              /\ (pc[i] \in {"e4", "w1", "w2", "cs"}) => (num[i] # 0)
-             /\ (pc[i] \in {"e2", "e3"}) => flag[i] 
+             /\ (pc[i] \in {"e2", "e3"}) => flag[i]
              /\ (pc[i] = "w2") => (nxt[i] # i)
              /\ (pc[i] \in {"e2", "w1", "w2"}) => i \notin unchecked[i]
              /\ (pc[i] \in {"w1", "w2"}) =>
@@ -341,10 +341,10 @@ Inv == /\ TypeOK
                    \/ pc[nxt[i]] = "e3"
                 => max[nxt[i]] >= num[i]
              /\ /\ pc[i] = "w2"
-                /\ previous[i] # -1 
+                /\ previous[i] # -1
                 /\ previous[i] # num[nxt[i]]
                 /\ pc[nxt[i]] \in {"e4", "w1", "w2", "cs"}
-                => Before(i, nxt[i])             
+                => Before(i, nxt[i])
              /\ (pc[i] = "cs") => \A j \in Procs \ {i} : Before(i, j)
 -----------------------------------------------------------------------------
 (***************************************************************************)
@@ -357,11 +357,11 @@ Inv == /\ TypeOK
 (* (Propositional Temporal Logic) backend prover.                          *)
 (***************************************************************************)
 THEOREM Spec => []MutualExclusion
-<1> USE N \in Nat DEFS Procs, TypeOK, Before, \prec, ProcSet 
+<1> USE N \in Nat DEFS Procs, TypeOK, Before, \prec, ProcSet
 
 <1>1. Init => Inv
   BY SMT DEF Init, Inv
-  
+
 <1>2. Inv /\ [Next]_vars => Inv'
   <2> SUFFICES ASSUME Inv,
                       [Next]_vars
@@ -518,13 +518,13 @@ THEOREM Spec => []MutualExclusion
     BY <2>10, Z3 DEF vars, Inv
   <2>11. QED
     BY <2>1, <2>10, <2>2, <2>3, <2>4, <2>5, <2>6, <2>7, <2>8, <2>9 DEF Next, p
-  
+
 <1>3. Inv => MutualExclusion
   BY SMT DEF Inv, MutualExclusion
-  
+
 <1>4. QED
   BY <1>1, <1>2, <1>3, PTL DEF Spec
------------------------------------------------------------------------------- 
+------------------------------------------------------------------------------
 Trying(i) == pc[i] = "e1"
 InCS(i)   == pc[i] = "cs"
 DeadlockFree == (\E i \in Procs : Trying(i)) ~> (\E i \in Procs : InCS(i))

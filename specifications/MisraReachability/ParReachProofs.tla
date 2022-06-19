@@ -9,15 +9,15 @@ EXTENDS ParReach, Integers, TLAPS
 
 LEMMA TypeInvariant == Spec  => []Inv
 <1>1. Init => Inv
-    BY RootAssump DEF Init, Inv, ProcSet  
+    BY RootAssump DEF Init, Inv, ProcSet
 <1>2. Inv /\ [Next]_vars => Inv'
    BY SuccAssump DEF Inv, Next, vars, ProcSet, p, a, b, c
 <1>3. QED
   BY <1>1, <1>2, PTL DEF Spec
-  
+
 THEOREM Spec => R!Init /\ [][R!Next]_R!vars
 <1>1. Init => R!Init
-    BY ProcsAssump DEF Init, R!Init, pcBar, vrootBar, ProcSet  
+    BY ProcsAssump DEF Init, R!Init, pcBar, vrootBar, ProcSet
 <1>2. Inv /\ [Next]_vars => [R!Next]_R!vars
   <2> SUFFICES ASSUME Inv,
                       [Next]_vars
@@ -43,8 +43,8 @@ THEOREM Spec => R!Init /\ [][R!Next]_R!vars
           BY <5>1, <3>2, <2>1 DEF a
         <5>. QED
           BY <5>2, <3>2, <2>1 DEF a
-      <4>3. QED 
-        BY <4>1, <4>2       
+      <4>3. QED
+        BY <4>1, <4>2
     <3>3. QED
       BY <3>1, <3>2 DEF R!Next
   <2>2. ASSUME NEW self \in Procs,

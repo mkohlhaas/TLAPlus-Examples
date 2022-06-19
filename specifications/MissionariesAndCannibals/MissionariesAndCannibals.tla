@@ -26,7 +26,7 @@ EXTENDS Integers, FiniteSets
 (***************************************************************************)
 (* Next comes the declaration of the sets of missionaries and cannibals.   *)
 (***************************************************************************)
-CONSTANTS Missionaries, Cannibals 
+CONSTANTS Missionaries, Cannibals
 
 (***************************************************************************)
 (* In TLA+, an execution of a system is described as a sequence of states, *)
@@ -64,7 +64,7 @@ CONSTANTS Missionaries, Cannibals
 (* (for east bank) and "W" (for west bank), so {"E","W"} is the set of     *)
 (* riverbanks.                                                             *)
 (***************************************************************************)
-VARIABLES bank_of_boat, who_is_on_bank 
+VARIABLES bank_of_boat, who_is_on_bank
 
 (***************************************************************************)
 (* Although not needed to specify the system, it's a good idea to tell the *)
@@ -93,7 +93,7 @@ VARIABLES bank_of_boat, who_is_on_bank
 (* written with a list bulleted by \/.                                     *)
 (***************************************************************************)
 TypeOK == /\ bank_of_boat \in {"E","W"}
-          /\ who_is_on_bank \in 
+          /\ who_is_on_bank \in
                 [{"E","W"} -> SUBSET (Cannibals \cup Missionaries)]
 
 (***************************************************************************)
@@ -111,12 +111,12 @@ TypeOK == /\ bank_of_boat \in {"E","W"}
 (*                                                                         *)
 (* represents the array/function F with index-set/domain D such that F[x]  *)
 (* equals exp(x) for all x in D.                                           *)
-(***************************************************************************)                             
+(***************************************************************************)
 Init == /\ bank_of_boat = "E"
-        /\ who_is_on_bank = [i \in {"E","W"} |-> 
+        /\ who_is_on_bank = [i \in {"E","W"} |->
                                IF i = "E" THEN Cannibals \cup Missionaries
                                           ELSE  {} ]
-              
+
 (***************************************************************************)
 (* We now define some operators that will be used to define the next-state *)
 (* formula Next.                                                           *)
@@ -165,12 +165,12 @@ OtherBank(b) == IF b = "E" THEN "W" ELSE "E"
 Move(S,b) == /\ Cardinality(S) \in {1,2}
              /\ LET newThisBank  == who_is_on_bank[b] \ S
                     newOtherBank == who_is_on_bank[OtherBank(b)] \cup S
-                IN  /\ IsSafe(newThisBank) 
+                IN  /\ IsSafe(newThisBank)
                     /\ IsSafe(newOtherBank)
                     /\ bank_of_boat' = OtherBank(b)
-                    /\ who_is_on_bank' = 
-                         [i \in {"E","W"} |-> IF i = b THEN newThisBank 
-                                                       ELSE newOtherBank]    
+                    /\ who_is_on_bank' =
+                         [i \in {"E","W"} |-> IF i = b THEN newThisBank
+                                                       ELSE newOtherBank]
 
 (***************************************************************************)
 (* The next-state formula Next describes all steps s -> t that represent a *)
@@ -185,7 +185,7 @@ Move(S,b) == /\ Cardinality(S) \in {1,2}
 (*                                                                         *)
 (* asserts that A(x) is true for at least one value x in the set T.        *)
 (***************************************************************************)
-Next == \E S \in SUBSET who_is_on_bank[bank_of_boat] : 
+Next == \E S \in SUBSET who_is_on_bank[bank_of_boat] :
             Move(S, bank_of_boat)
 
 (***************************************************************************)
@@ -216,7 +216,7 @@ Next == \E S \in SUBSET who_is_on_bank[bank_of_boat] :
 (*                                                                         *)
 (* This problem was proposed to me by Jay Misra, who then suggested        *)
 (* improvements to my first version of the spec.                           *)
-(***************************************************************************)                  
+(***************************************************************************)
 =============================================================================
 \* Modification History
 \* Last modified Sat Dec 22 14:17:18 PST 2018 by lamport

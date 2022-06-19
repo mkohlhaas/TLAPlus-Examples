@@ -3,26 +3,26 @@ EXTENDS EWD840, SVG, TLC, Sequences, Integers \* Grab SVG from https://github.co
 
 \* In order to show messages, we need a (auxiliary) history variable to remember
 \* the occurrence of a SendMsg step including the sender and receiver of a message.
-\* The spec below is equivalent to EWD840 except for the history variable, and 
+\* The spec below is equivalent to EWD840 except for the history variable, and
 \* AnimInit more constraint to reduce the number of initial states.
 VARIABLES history
 
-AnimInit == 
+AnimInit ==
   /\ active \in [Node -> BOOLEAN]
   /\ color \in [Node -> Color]
   /\ tpos = N - 1 \* The token is initially always at N - 1.
   /\ tcolor = "black"
   /\ history = <<0, 0, "init">>
-  
+
 AnimInitiateProbe ==
   /\ InitiateProbe
   /\ history' = <<history[1], history[2], "InitiateProbe">>
-  
-AnimPassToken(i) == 
+
+AnimPassToken(i) ==
   /\ PassToken(i)
   /\ history' = <<history[1], history[2], "PassToken">>
 
-AnimSystem == 
+AnimSystem ==
   /\ AnimInitiateProbe \/ \E i \in Node \ {0} : AnimPassToken(i)
 
 AnimSendMsg(i) ==
@@ -38,7 +38,7 @@ AnimDeactivate(i) ==
   /\ history' = <<history[1], history[2], "Deactivate">>
 
 AnimEnvironment == \E i \in Node : AnimSendMsg(i) \/ AnimDeactivate(i)
-                  
+
 AnimNext == AnimSystem \/ AnimEnvironment
 
 Animvars == <<active, color, tpos, tcolor, history>>
@@ -53,7 +53,7 @@ LegendBasePos == [ x |-> -5, y |-> 25 ]
 RingBasePos == [w |-> 55, h |-> 55, r |-> 75]
 
 \* 12pts (x/y) offset to be concentric with RingNetwork.
-TokenBasePos == [ w |-> RingBasePos.w + 12, 
+TokenBasePos == [ w |-> RingBasePos.w + 12,
                   h |-> RingBasePos.h + 12,
                   r |-> RingBasePos.r + 25 ]
 
@@ -70,29 +70,29 @@ NodeDimension == 26
 
 \* Ring Network
 RingNetwork ==
-    LET RN[ n \in Node ] ==         
-            LET coord == NodeOfRingNetwork(RingBasePos.w, RingBasePos.h, RingBasePos.r, n, N)    
+    LET RN[ n \in Node ] ==
+            LET coord == NodeOfRingNetwork(RingBasePos.w, RingBasePos.h, RingBasePos.r, n, N)
                 id == Text(coord.x + 10, coord.y - 5, ToString(n), Arial)
                 node == Rect(coord.x, coord.y, NodeDimension, NodeDimension,
                                             \* round (rx=15) if node is active.
                                             [rx |-> IF ~active[n] THEN "0" ELSE "15",
-                                            stroke |-> "black", 
+                                            stroke |-> "black",
                                             fill |-> color[n]])
             IN Group(<<node, id>>, ("transform" :> "translate(0 125)"))
     IN Group(RN, <<>>)
 
 ---------------------------------------------------------------------------
 \* Token ring (with larger radius than ring above and only for the node that currently holds the token).
-TokenNetwork ==     
-    LET coord == NodeOfRingNetwork(TokenBasePos.w, TokenBasePos.h, TokenBasePos.r, tpos, N)    
-        circ  == Circle(coord.x, coord.y, 5, [stroke |-> "black", fill |-> tcolor])  
+TokenNetwork ==
+    LET coord == NodeOfRingNetwork(TokenBasePos.w, TokenBasePos.h, TokenBasePos.r, tpos, N)
+        circ  == Circle(coord.x, coord.y, 5, [stroke |-> "black", fill |-> tcolor])
     \* Group always expects a sequence!
     IN Group(<<circ>>, ("transform" :> "translate(0 125)"))
 
 ---------------------------------------------------------------------------
 \* Messages send from one node to another.  A proper arrow would be more intuitive with regards to the direction
 \* of message flow but SVG doesn't natively has arrows.  This is why we use a lollipop instead where the ball
-\* replaces the arrowhead. 
+\* replaces the arrowhead.
 
 \* Centers the line/circle at the center of a node instead of
 \* a node's left upper corner (which are its 0:0 coordinates).
@@ -101,8 +101,8 @@ ArrowPosOffset == NodeDimension \div 2
 Messages ==
     LET from == NodeOfRingNetwork(RingBasePos.w, RingBasePos.h, RingBasePos.r, history[1], N)
         to   == NodeOfRingNetwork(RingBasePos.w, RingBasePos.h, RingBasePos.r, history[2], N)
-        line == Line(from.x + ArrowPosOffset, from.y + ArrowPosOffset, 
-                        to.x + ArrowPosOffset, to.y + ArrowPosOffset, 
+        line == Line(from.x + ArrowPosOffset, from.y + ArrowPosOffset,
+                        to.x + ArrowPosOffset, to.y + ArrowPosOffset,
                         [stroke |-> "orange", marker_end |-> "url(#arrow)"])
     IN Group(IF history[3] = "SendMsg" THEN <<line>> ELSE <<>>, ("transform" :> "translate(0 125)"))
 
@@ -113,7 +113,7 @@ Defs ==
 
 Animation == SVGElemToString(Group(<<Labels, RingNetwork, TokenNetwork, Messages>>, <<>>))
 
-Alias == [ 
+Alias == [
     \* toolbox |-> Animation,
     eyeofgnome |-> "<svg viewBox='-80 0 300 300'>" \o Defs \o Animation \o "</svg>"
     \* foob |-> [i \in 1..20 |-> i]
@@ -123,12 +123,12 @@ Alias == [
 
 \* Property that leads to interesting traces when animated.
 
-AnimInv == terminationDetected => TLCGet("level") < 20 
+AnimInv == terminationDetected => TLCGet("level") < 20
 
 =============================================================================
 
 ## Assuming the most recent Toolbox nightly build (https://nightly.tlapl.us/dist)
-## installed to /opt/toolbox.  On macOS, install gawk with `brew install gawk` 
+## installed to /opt/toolbox.  On macOS, install gawk with `brew install gawk`
 ## (default nawk does not like the match).
 
 /opt/toolbox/tla2tools.jar -simulate EWD840_anim | gawk 'match($0,/<svg.*<\/svg>/) { n += 1; print substr($0,RSTART,RLENGTH) > sprintf("%03d", n) ".svg" }' && eog .
@@ -151,7 +151,7 @@ AnimInv == terminationDetected => TLCGet("level") < 20
 
 
 ## Technical notes:
-## RSTART+9 removes "toolbox =".  Instead, prefix the match with "tb |->" 
+## RSTART+9 removes "toolbox =".  Instead, prefix the match with "tb |->"
 ## that is expected by the TLA+ trace Animator.  Also, the definition
 ## of Messages aboved has been changed to not use SVG's visibility tag that
 ## causes problems with the TLA+ trace Animator and inkscape (see below).
@@ -168,7 +168,7 @@ AnimInv == terminationDetected => TLCGet("level") < 20
 
 ----
 ## The commands below here have multiple issues such as broken aspect ratio,
-## wrong dimensions, ...  Most importantly though, inkscape *ignores* SVG's 
+## wrong dimensions, ...  Most importantly though, inkscape *ignores* SVG's
 ## visibility attribute causing a bogus animation.  However, the spec above
 ## no longer uses visibility=hidden in the definition of Message.
 
@@ -199,7 +199,7 @@ for i in *.svg; do inkscape -w 1920 -h 1920 -b lightyellow --export-png=$i.png $
 ## - https://bugs.launchpad.net/inkscape/+bug/166042
 ## - https://bugs.launchpad.net/inkscape/+bug/1577763
 
-## Render the sequence of pngs into an mp4 with two frames per second. 
+## Render the sequence of pngs into an mp4 with two frames per second.
 ffmpeg -r 2 -y -i %03d.svg.png EWD840.mp4
 
 

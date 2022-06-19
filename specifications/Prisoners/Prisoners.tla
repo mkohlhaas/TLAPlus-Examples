@@ -1,4 +1,4 @@
------------------------------- MODULE Prisoners ----------------------------- 
+------------------------------ MODULE Prisoners -----------------------------
 (***************************************************************************)
 (* This module specifies the solution to the following puzzle, given on    *)
 (* the Car Guys NPR radio show:                                            *)
@@ -27,19 +27,19 @@
 (***************************************************************************)
 EXTENDS Naturals, FiniteSets
 
-CONSTANTS 
+CONSTANTS
   Prisoner,
     (***********************************************************************)
     (* The set of all prisoners.                                           *)
     (***********************************************************************)
 
-  Counter  
+  Counter
     (***********************************************************************)
     (* This is an arbitrarily chosen prisoner, who will do the necessary   *)
     (* counting.                                                           *)
     (***********************************************************************)
 
-ASSUME 
+ASSUME
   (*************************************************************************)
   (* We assume that the counter is a prisoner.  We also assume that there  *)
   (* is more than one prisoner.  (The problem is trivial if there is a     *)
@@ -52,14 +52,14 @@ OtherPrisoner == Prisoner \ {Counter}
   (*************************************************************************)
   (* The set of all prisoners other than the counter.                      *)
   (*************************************************************************)
-  
-VARIABLES 
-  switchAUp, switchBUp,    
+
+VARIABLES
+  switchAUp, switchBUp,
     (***********************************************************************)
     (* The states of the two switches, represented by boolean-valued       *)
     (* variables.                                                          *)
     (***********************************************************************)
-    
+
   timesSwitched,
     (***********************************************************************)
     (* For ever prisoner except the counter, timesSwitched[p] is the       *)
@@ -72,7 +72,7 @@ VARIABLES
     (* The number of times the Counter has switched switch A down.         *)
     (***********************************************************************)
 
-vars == <<switchAUp, switchBUp, timesSwitched, count>>    
+vars == <<switchAUp, switchBUp, timesSwitched, count>>
   (*************************************************************************)
   (* The tuple of all variables.                                           *)
   (*************************************************************************)
@@ -80,7 +80,7 @@ vars == <<switchAUp, switchBUp, timesSwitched, count>>
 (***************************************************************************)
 (* We first define three state predicates.                                 *)
 (***************************************************************************)
-TypeOK == 
+TypeOK ==
   (*************************************************************************)
   (* The type-correctness invariant.  This is not actually part of the     *)
   (* specification.  It is added to help the reader understand the         *)
@@ -103,7 +103,7 @@ Init ==
   /\ timesSwitched = [i \in OtherPrisoner |-> 0]
   /\ count     = 0
 
-Done == 
+Done ==
   (*************************************************************************)
   (* This is the condition that tells the counter that every other         *)
   (* prisoner has been in the room at least once.  (He will trivially know *)
@@ -128,7 +128,7 @@ NonCounterStep(i) ==
        ELSE /\ switchBUp' = ~switchBUp
             /\ UNCHANGED <<switchAUp, timesSwitched>>
   /\ UNCHANGED count
-       
+
 CounterStep ==
   (*************************************************************************)
   (* If switch A is up, the counter moves it down and increments his (or   *)
@@ -142,14 +142,14 @@ CounterStep ==
             /\ UNCHANGED <<switchAUp, count>>
   /\ UNCHANGED timesSwitched
 
-Next == 
+Next ==
   (*************************************************************************)
   (* The next-state relation                                               *)
   (*************************************************************************)
-  \/ CounterStep 
+  \/ CounterStep
   \/ \E i \in OtherPrisoner : NonCounterStep(i)
 
-Fairness == 
+Fairness ==
   (*************************************************************************)
   (* This asserts that every prisoner is brought into the room infinitely  *)
   (* often.                                                                *)
@@ -159,7 +159,7 @@ Fairness ==
 
 Spec == Init /\ [][Next]_vars /\ Fairness
 -----------------------------------------------------------------------------
-Safety == 
+Safety ==
   (*************************************************************************)
   (* This formula asserts that safety condition: that Done true implies    *)
   (* that every prisoner other than the counter has flipped switch A at    *)
@@ -174,7 +174,7 @@ Liveness == <>Done
   (* This asserts that Done is eventually true, so the prisoners are       *)
   (* eventually released.                                                  *)
   (*************************************************************************)
-  
+
 THEOREM Spec => Safety /\ Liveness
   (*************************************************************************)
   (* This theorem asserts that the specification satisfies properties      *)

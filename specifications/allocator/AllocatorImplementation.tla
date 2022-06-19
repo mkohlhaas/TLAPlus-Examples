@@ -39,7 +39,7 @@ Sched == INSTANCE SchedulingAllocator
 -------------------------------------------------------------------------
 
 Messages ==
-  [type : {"request", "allocate", "return"}, 
+  [type : {"request", "allocate", "return"},
    clt : Clients,
    rsrc : SUBSET Resources]
 
@@ -52,7 +52,7 @@ TypeInvariant ==
 -------------------------------------------------------------------------
 
 (* Initially, no resources have been requested or allocated. *)
-Init == 
+Init ==
   /\ Sched!Init
   /\ requests = [c \in Clients |-> {}]
   /\ holding = [c \in Clients |-> {}]
@@ -112,7 +112,7 @@ RRet(m) ==
 (* The allocator extends its schedule by adding the processes from     *)
 (* the pool (that have outstanding requests but that have not yet been *)
 (* scheduled, in some unspecified order.                               *)
-Schedule == 
+Schedule ==
   /\ Sched!Schedule
   /\ UNCHANGED <<requests,holding,network>>
 
@@ -140,7 +140,7 @@ Liveness ==
   /\ \A c \in Clients : WF_vars(requests[c]={} /\ Return(c,holding[c]))
   /\ \A c \in Clients : WF_vars(\E S \in SUBSET Resources : Allocate(c, S))
   /\ WF_vars(Schedule)
-  /\ \A m \in Messages : 
+  /\ \A m \in Messages :
        /\ WF_vars(RReq(m))
        /\ WF_vars(RAlloc(m))
        /\ WF_vars(RRet(m))
@@ -163,13 +163,13 @@ Invariant ==  \** a lower-level invariant
   (** invariants for the allocator's data structures as before **)
   /\ Sched!AllocatorInvariant
   (** interplay between allocator and client variables **)
-  /\ \A c \in Clients : 
+  /\ \A c \in Clients :
        /\ Cardinality(RequestsInTransit(c)) <= 1
        /\ requests[c] = unsat[c]
                      \cup UNION RequestsInTransit(c)
                      \cup UNION AllocsInTransit(c)
-       /\ alloc[c] = holding[c] 
-                  \cup UNION AllocsInTransit(c) 
+       /\ alloc[c] = holding[c]
+                  \cup UNION AllocsInTransit(c)
                   \cup UNION ReturnsInTransit(c)
 
 (* correctness properties in terms of clients' variables *)
@@ -182,7 +182,7 @@ ClientsWillReturn ==
 ClientsWillObtain ==
   \A c \in Clients, r \in Resources : r \in requests[c] ~> r \in holding[c]
 
-InfOftenSatisfied == 
+InfOftenSatisfied ==
   \A c \in Clients : []<>(requests[c] = {})
 
 -------------------------------------------------------------------------

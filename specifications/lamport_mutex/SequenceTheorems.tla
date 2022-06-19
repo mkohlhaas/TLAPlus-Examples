@@ -16,17 +16,17 @@ THEOREM ElementOfSeq ==
    ASSUME NEW S, NEW seq \in Seq(S),
           NEW n \in 1..Len(seq)
    PROVE  seq[n] \in S
- 
+
 THEOREM EmptySeq ==
    ASSUME NEW S
    PROVE /\ << >> \in Seq(S)
          /\ \A seq \in Seq(S) : (seq = << >>) <=> (Len(seq) = 0)
 
-THEOREM LenProperties == 
+THEOREM LenProperties ==
   ASSUME NEW S, NEW seq \in Seq(S)
   PROVE  /\ Len(seq) \in Nat
          /\ seq \in [1..Len(seq) -> S]
-         /\ DOMAIN seq = 1 .. Len(seq) 
+         /\ DOMAIN seq = 1 .. Len(seq)
 
 THEOREM ExceptSeq ==
   ASSUME NEW S, NEW seq \in Seq(S), NEW i \in 1 .. Len(seq), NEW e \in S
@@ -45,7 +45,7 @@ THEOREM SeqEqual ==
   PROVE  s = t
 
 (***************************************************************************
-                 Concatenation (\o) And Properties                      
+                 Concatenation (\o) And Properties
 ***************************************************************************)
 
 THEOREM ConcatProperties ==
@@ -138,9 +138,9 @@ THEOREM SubSeqFull ==
 (* Adjacent subsequences can be concatenated to obtain a longer subsequence. *)
 (*****************************************************************************)
 THEOREM ConcatAdjacentSubSeq ==
-  ASSUME NEW S, NEW seq \in Seq(S), 
-         NEW m \in 1 .. Len(seq)+1, 
-         NEW k \in m-1 .. Len(seq), 
+  ASSUME NEW S, NEW seq \in Seq(S),
+         NEW m \in 1 .. Len(seq)+1,
+         NEW k \in m-1 .. Len(seq),
          NEW n \in k .. Len(seq)
   PROVE  SubSeq(seq, m, k) \o SubSeq(seq, k+1, n) = SubSeq(seq, m, n)
 
@@ -176,7 +176,7 @@ Cons(elt, seq) == <<elt>> \o seq
 THEOREM ConsProperties ==
   ASSUME NEW S, NEW seq \in Seq(S), NEW elt \in S
   PROVE /\ Cons(elt, seq) \in Seq(S)
-        /\ Cons(elt, seq) # <<>> 
+        /\ Cons(elt, seq) # <<>>
         /\ Len(Cons(elt, seq)) = Len(seq)+1
         /\ Head(Cons(elt, seq)) = elt
         /\ Tail(Cons(elt, seq)) = seq
@@ -233,15 +233,15 @@ Last(seq) == seq[Len(seq)]
 THEOREM FrontProperties ==
   ASSUME NEW S, NEW seq \in Seq(S)
   PROVE  /\ Front(seq) \in Seq(S)
-         /\ Len(Front(seq)) = IF seq = << >> THEN 0 ELSE Len(seq)-1                    
+         /\ Len(Front(seq)) = IF seq = << >> THEN 0 ELSE Len(seq)-1
          /\ \A i \in 1 .. Len(seq)-1 : Front(seq)[i] = seq[i]
 
 THEOREM FrontOfEmpty == Front(<< >>) = << >>
 
 THEOREM LastProperties ==
   ASSUME NEW S, NEW seq \in Seq(S), seq # << >>
-  PROVE  /\ Last(seq) \in S 
-         /\ Append(Front(seq), Last(seq)) = seq 
+  PROVE  /\ Last(seq) \in S
+         /\ Append(Front(seq), Last(seq)) = seq
 
 THEOREM FrontLastOfSubSeq ==
   ASSUME NEW S, NEW seq \in Seq(S),
@@ -262,10 +262,10 @@ THEOREM AppendInjective ==
 (* As a corollary of the previous theorems it follows that a sequence is   *)
 (* either empty or can be obtained by appending an element to a sequence.  *)
 (***************************************************************************)
-THEOREM SequenceEmptyOrAppend == 
+THEOREM SequenceEmptyOrAppend ==
   ASSUME NEW S, NEW seq \in Seq(S), seq # << >>
   PROVE \E s \in Seq(S), elt \in S : seq = Append(s, elt)
-     
+
 (***************************************************************************)
 (*                   REVERSE SEQUENCE And Properties                       *)
 (*    Reverse(seq) --> Reverses the sequence seq                           *)
@@ -289,7 +289,7 @@ THEOREM ReverseEmptyIffEmpty ==
   ASSUME NEW S, NEW seq \in Seq(S), Reverse(seq) = <<>>
   PROVE  seq = <<>>
 
-THEOREM ReverseConcat == 
+THEOREM ReverseConcat ==
   ASSUME NEW S, NEW s1 \in Seq(S), NEW s2 \in Seq(S)
   PROVE  Reverse(s1 \o s2) = Reverse(s2) \o Reverse(s1)
 
@@ -326,12 +326,12 @@ THEOREM ReverseFrontEqualsTailReverse ==
 (***************************************************************************)
 
 THEOREM SequencesInductionAppend ==
-  ASSUME NEW P(_), NEW S, 
+  ASSUME NEW P(_), NEW S,
          P(<< >>),
          \A s \in Seq(S), e \in S : P(s) => P(Append(s,e))
   PROVE  \A seq \in Seq(S) : P(seq)
-      
-THEOREM SequencesInductionCons == 
+
+THEOREM SequencesInductionCons ==
   ASSUME NEW P(_), NEW S,
          P(<< >>),
          \A s \in Seq(S), e \in S : P(s) => P(Cons(e,s))
@@ -341,21 +341,21 @@ THEOREM SequencesInductionCons ==
 (*                          RANGE OF SEQUENCE                              *)
 (***************************************************************************)
 
-THEOREM RangeOfSeq == 
+THEOREM RangeOfSeq ==
   ASSUME NEW S, NEW seq \in Seq(S)
   PROVE  Range(seq) \in SUBSET S
 
-THEOREM RangeEquality == 
+THEOREM RangeEquality ==
   ASSUME NEW S, NEW seq \in Seq(S)
   PROVE Range(seq) = { seq[i] : i \in 1 .. Len(seq) }
 
 (* The range of the reverse sequence equals that of the original one. *)
-THEOREM RangeReverse == 
+THEOREM RangeReverse ==
   ASSUME NEW S, NEW seq \in Seq(S)
   PROVE Range(Reverse(seq)) = Range(seq)
 
 (* Range of concatenation of sequences is the union of the ranges *)
-THEOREM RangeConcatenation == 
+THEOREM RangeConcatenation ==
   ASSUME NEW S, NEW s1 \in Seq(S), NEW s2 \in Seq(S)
   PROVE  Range(s1 \o s2) = Range(s1) \cup Range(s2)
 
@@ -412,7 +412,7 @@ THEOREM FrontIsPrefix ==
   PROVE  /\ IsPrefix(Front(s), s)
          /\ s # <<>> => IsStrictPrefix(Front(s), s)
 
-LEMMA RangeIsPrefix == 
+LEMMA RangeIsPrefix ==
   ASSUME NEW S, NEW s \in Seq(S), NEW t \in Seq(S),
          IsPrefix(s,t)
   PROVE Range(s) \subseteq Range(t)

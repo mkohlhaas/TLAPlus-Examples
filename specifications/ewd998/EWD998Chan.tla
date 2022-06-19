@@ -13,12 +13,12 @@ ASSUME NAssumption == N \in Nat \ {0} \* At least one node.
 Node == 0 .. N-1
 Color == {"white", "black"}
 
-VARIABLES 
+VARIABLES
  active,
  color,
  counter,
  inbox
-  
+
 vars == <<active, color, counter, inbox>>
 
 TokenMsg == [type : {"tok"}, q : Int, color : Color]
@@ -37,14 +37,14 @@ TypeOK ==
         => i = j /\ k = l
 
 ------------------------------------------------------------------------------
- 
+
 Init ==
   (* Rule 0 *)
   /\ counter = [i \in Node |-> 0] \* c properly initialized
-  /\ inbox = [i \in Node |-> IF i = 0 
-                             THEN << [type |-> "tok", q |-> 0, color |-> "black" ] >> 
+  /\ inbox = [i \in Node |-> IF i = 0
+                             THEN << [type |-> "tok", q |-> 0, color |-> "black" ] >>
                              ELSE <<>>] \* with empty channels.
-  (* EWD840 *) 
+  (* EWD840 *)
   /\ active \in [Node -> BOOLEAN]
   /\ color \in [Node -> Color]
 
@@ -56,28 +56,28 @@ InitiateProbe ==
       /\ \* Previous round inconsistent, if:
          \/ inbox[0][j].color = "black"
          \/ color[0] = "black"
-         \* Implicit stated in EWD998 as c0 + q > 0 means that termination has not 
+         \* Implicit stated in EWD998 as c0 + q > 0 means that termination has not
          \* been achieved: Initiate a probe if the token's color is white but the
          \* number of in-flight messages is not zero.
          \/ counter[0] + inbox[0][j].q # 0
-      /\ inbox' = [inbox EXCEPT ![N-1] = Append(@, 
+      /\ inbox' = [inbox EXCEPT ![N-1] = Append(@,
            [type |-> "tok", q |-> 0,
              (* Rule 6 *)
-             color |-> "white"]), 
-             ![0] = RemoveAt(@, j) ] \* consume token message from inbox[0]. 
+             color |-> "white"]),
+             ![0] = RemoveAt(@, j) ] \* consume token message from inbox[0].
   (* Rule 6 *)
   /\ color' = [ color EXCEPT ![0] = "white" ]
   \* The state of the nodes remains unchanged by token-related actions.
-  /\ UNCHANGED <<active, counter>>                            
-  
+  /\ UNCHANGED <<active, counter>>
+
 PassToken(i) ==
   (* Rule 2 *)
   /\ ~ active[i] \* If machine i is active, keep the token.
-  /\ \E j \in 1..Len(inbox[i]) : 
+  /\ \E j \in 1..Len(inbox[i]) :
           /\ inbox[i][j].type = "tok"
           \* the machine nr.i+1 transmits the token to machine nr.i under q := q + c[i+1]
           /\ LET tkn == inbox[i][j]
-             IN  inbox' = [inbox EXCEPT ![i-1] = 
+             IN  inbox' = [inbox EXCEPT ![i-1] =
                                        Append(@, [tkn EXCEPT !.q = tkn.q + counter[i],
                                                              !.color = IF color[i] = "black"
                                                                        THEN "black"
@@ -86,7 +86,7 @@ PassToken(i) ==
   (* Rule 7 *)
   /\ color' = [ color EXCEPT ![i] = "white" ]
   \* The state of the nodes remains unchanged by token-related actions.
-  /\ UNCHANGED <<active, counter>>                            
+  /\ UNCHANGED <<active, counter>>
 
 System == \/ InitiateProbe
           \/ \E i \in Node \ {0} : PassToken(i)
@@ -104,7 +104,7 @@ SendMsg(i) ==
           /\ inbox' = [inbox EXCEPT ![j] = Append(@, [type |-> "pl" ] ) ]
           \* Note that we don't blacken node i as in EWD840 if node i
           \* sends a message to node j with j > i
-  /\ UNCHANGED <<active, color>>                            
+  /\ UNCHANGED <<active, color>>
 
 RecvMsg(i) ==
   (* Rule 0 *)
@@ -114,10 +114,10 @@ RecvMsg(i) ==
   \* Receipt of a message activates i.
   /\ active' = [ active EXCEPT ![i] = TRUE ]
   \* Consume a message (not the token!).
-  /\ \E j \in 1..Len(inbox[i]) : 
+  /\ \E j \in 1..Len(inbox[i]) :
           /\ inbox[i][j].type = "pl"
           /\ inbox' = [inbox EXCEPT ![i] = RemoveAt(@, j) ]
-  /\ UNCHANGED <<>>                           
+  /\ UNCHANGED <<>>
 
 Deactivate(i) ==
   /\ active[i]
@@ -138,7 +138,7 @@ Spec == Init /\ [][Next]_vars /\ WF_vars(System)
 (***************************************************************************)
 (* The number of incoming messages of a node's given inbox.                *)
 (***************************************************************************)
-NumberOfMsg(ibx) == 
+NumberOfMsg(ibx) ==
   Len(SelectSeq(ibx, LAMBDA msg: msg.type = "pl"))
 
 (***************************************************************************)
@@ -168,17 +168,17 @@ token ==
 (* EWD998 with channels refines EWD998 that models channels as sets.       *)
 (***************************************************************************)
 EWD998 == INSTANCE EWD998 WITH token <-
-                                  [pos   |-> tpos, 
+                                  [pos   |-> tpos,
                                    q     |-> token.q,
                                    color |-> token.color],
                                pending <-
-                                  \* Count the in-flight "pl" messages. The 
+                                  \* Count the in-flight "pl" messages. The
                                   \* inbox variable represents a node's network
                                   \* interface that receives arbitrary messages.
                                   \* However, EWD998 only "tracks" payload (pl)
                                   \* messages.
-                                  [n \in Node |-> 
-                                     Len(SelectSeq(inbox[n], 
+                                  [n \in Node |->
+                                     Len(SelectSeq(inbox[n],
                                          LAMBDA msg: msg.type = "pl")) ]
 
 \* TLC config doesn't accept the expression EWD998!Spec for PROPERTY.

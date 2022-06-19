@@ -7,7 +7,7 @@ p1, p2, p3
 ----
 
 \* MV CONSTANT definitions Proc
-const_1293897152927428000 == 
+const_1293897152927428000 ==
 {p1, p2, p3}
 ----
 

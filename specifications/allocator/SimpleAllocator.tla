@@ -32,7 +32,7 @@ TypeInvariant ==
 available == Resources \ (UNION {alloc[c] : c \in Clients})
 
 (* Initially, no resources have been requested or allocated. *)
-Init == 
+Init ==
   /\ unsat = [c \in Clients |-> {}]
   /\ alloc = [c \in Clients |-> {}]
 
@@ -59,7 +59,7 @@ Return(c,S) ==
   /\ UNCHANGED unsat
 
 (* The next-state relation. *)
-Next == 
+Next ==
   \E c \in Clients, S \in SUBSET Resources :
      Request(c,S) \/ Allocate(c,S) \/ Return(c,S)
 
@@ -68,7 +68,7 @@ vars == <<unsat,alloc>>
 -------------------------------------------------------------------------
 
 (* The complete high-level specification. *)
-SimpleAllocator == 
+SimpleAllocator ==
   /\ Init /\ [][Next]_vars
   /\ \A c \in Clients: WF_vars(Return(c, alloc[c]))
   /\ \A c \in Clients: SF_vars(\E S \in SUBSET Resources: Allocate(c,S))
@@ -84,7 +84,7 @@ ClientsWillReturn ==
 ClientsWillObtain ==
   \A c \in Clients, r \in Resources : r \in unsat[c] ~> r \in alloc[c]
 
-InfOftenSatisfied == 
+InfOftenSatisfied ==
   \A c \in Clients : []<>(unsat[c] = {})
 
 -------------------------------------------------------------------------
@@ -98,7 +98,7 @@ Symmetry == Permutations(Clients) \cup Permutations(Resources)
 (* clients: resources need be returned only if the entire request has  *)
 (* been satisfied.                                                     *)
 
-SimpleAllocator2 == 
+SimpleAllocator2 ==
   /\ Init /\ [][Next]_vars
   /\ \A c \in Clients: WF_vars(unsat[c] = {} /\ Return(c, alloc[c]))
   /\ \A c \in Clients: SF_vars(\E S \in SUBSET Resources: Allocate(c,S))

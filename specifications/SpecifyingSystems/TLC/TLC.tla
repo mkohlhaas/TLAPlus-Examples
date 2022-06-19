@@ -10,7 +10,7 @@ JavaTime == CHOOSE n : n \in Nat
 d :> e == [x \in {d} |-> e]
 f @@ g == [x \in (DOMAIN f) \cup (DOMAIN g) |->
             IF x \in DOMAIN f THEN f[x] ELSE g[x]]
-Permutations(S) == 
+Permutations(S) ==
    {f \in [S -> S] : \A w \in S : \E v \in S : f[v]=w}
 -----------------------------------------------------------------------------
 (***************************************************************************)
@@ -19,7 +19,7 @@ Permutations(S) ==
 (***************************************************************************)
 SortSeq(s, Op(_, _)) ==
     LET Perm == CHOOSE p \in Permutations(1 .. Len(s)) :
-                  \A i, j \in 1..Len(s) : 
+                  \A i, j \in 1..Len(s) :
                      (i < j) => Op(s[p[i]], s[p[j]]) \/ (s[p[i]] = s[p[j]])
     IN  [i \in 1..Len(s) |-> s[Perm[i]]]
 =============================================================================

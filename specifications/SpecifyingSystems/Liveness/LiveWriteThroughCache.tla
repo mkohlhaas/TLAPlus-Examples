@@ -1,4 +1,4 @@
------------------------- MODULE LiveWriteThroughCache ----------------------- 
+------------------------ MODULE LiveWriteThroughCache -----------------------
 (***************************************************************************)
 (* This module adds the liveness condition described in the section "The   *)
 (* Write-Through Cache" to the specification Spec of module                *)

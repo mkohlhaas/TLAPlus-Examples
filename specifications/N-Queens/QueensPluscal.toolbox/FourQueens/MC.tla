@@ -2,7 +2,7 @@
 EXTENDS QueensPluscal, TLC
 
 \* CONSTANT definitions @modelParameterConstants:0N
-const_129269506133433000 == 
+const_129269506133433000 ==
 4
 ----
 

@@ -1,5 +1,5 @@
 ------------------------------- MODULE Peano -------------------------------
-PeanoAxioms(N, Z, Sc) == 
+PeanoAxioms(N, Z, Sc) ==
   /\ Z \in N
   /\ Sc \in [N -> N]
   /\ \A n \in N : (\E m \in N : n = Sc[m]) <=> (n # Z)

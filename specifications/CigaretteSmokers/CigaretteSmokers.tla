@@ -25,23 +25,23 @@ ASSUME /\ Offers \subseteq (SUBSET Ingredients)
 (***************************************************************************)
 TypeOK == /\ smokers \in [Ingredients -> [smoking: BOOLEAN]]
           /\ dealer  \in Offers \/ dealer = {}
-          
+
 vars == <<smokers, dealer>>
 
 ChooseOne(S, P(_)) == CHOOSE x \in S : P(x) /\ \A y \in S : P(y) => y = x
 
 Init == /\ smokers = [r \in Ingredients |-> [smoking |-> FALSE]]
         /\ dealer \in Offers
-        
+
 startSmoking == /\ dealer /= {}
-                /\ smokers' = [r \in Ingredients |-> [smoking |-> {r} \cup 
+                /\ smokers' = [r \in Ingredients |-> [smoking |-> {r} \cup
                                                       dealer = Ingredients]]
                 /\ dealer' = {}
-                
+
 stopSmoking == /\ dealer = {}
                /\ LET r == ChooseOne(Ingredients,
                                      LAMBDA x : smokers[x].smoking)
-                  IN smokers' = [smokers EXCEPT ![r].smoking = FALSE] 
+                  IN smokers' = [smokers EXCEPT ![r].smoking = FALSE]
                /\ dealer' \in Offers
 
 Next == startSmoking \/ stopSmoking

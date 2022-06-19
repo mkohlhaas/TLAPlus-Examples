@@ -46,7 +46,7 @@ ASSUME N \in Nat
 (***************************************************************************)
 (* We define Procs to be the set {1, 2, ...  , N} of processes.            *)
 (***************************************************************************)
-Procs == 1..N 
+Procs == 1..N
 
 (***************************************************************************)
 (* \prec is defined to be the lexicographical less-than relation on pairs  *)
@@ -57,34 +57,34 @@ a \prec b == \/ a[1] < b[1]
 
 (***       this is a comment containing the PlusCal code *
 
---algorithm Bakery 
+--algorithm Bakery
 { variables num = [i \in Procs |-> 0], flag = [i \in Procs |-> FALSE];
   fair process (p \in Procs)
     variables unchecked = {}, max = 0, nxt = 1 ;
-    { ncs:- while (TRUE) 
+    { ncs:- while (TRUE)
             { e1:   either { flag[self] := ~ flag[self] ;
                              goto e1 }
                     or     { flag[self] := TRUE;
                              unchecked := Procs \ {self} ;
                              max := 0
-                           } ;     
-              e2:   while (unchecked # {}) 
-                      { with (i \in unchecked) 
+                           } ;
+              e2:   while (unchecked # {})
+                      { with (i \in unchecked)
                           { unchecked := unchecked \ {i};
                             if (num[i] > max) { max := num[i] }
                           }
                       };
               e3:   either { with (k \in Nat) { num[self] := k } ;
                              goto e3 }
-                    or     { with (i \in {j \in Nat : j > max}) 
+                    or     { with (i \in {j \in Nat : j > max})
                                { num[self] := i }
                            } ;
               e4:   either { flag[self] := ~ flag[self] ;
                              goto e4 }
                     or     { flag[self] := FALSE;
-                             unchecked := Procs \ {self} 
+                             unchecked := Procs \ {self}
                            } ;
-              w1:   while (unchecked # {}) 
+              w1:   while (unchecked # {})
                       {     with (i \in unchecked) { nxt := i };
                             await ~ flag[nxt];
                         w2: await \/ num[nxt] = 0
@@ -94,7 +94,7 @@ a \prec b == \/ a[1] < b[1]
               cs:   skip ;  \* the critical section;
               exit: either { with (k \in Nat) { num[self] := k } ;
                              goto exit }
-                    or     { num[self] := 0 } 
+                    or     { num[self] := 0 }
             }
     }
 }
@@ -221,7 +221,7 @@ TypeOK == /\ num \in [Procs -> Nat]
           /\ max \in [Procs -> Nat]
           /\ nxt \in [Procs -> Procs]
           /\ pc \in [Procs -> {"ncs", "e1", "e2", "e3",
-                               "e4", "w1", "w2", "cs", "exit"}]             
+                               "e4", "w1", "w2", "cs", "exit"}]
 
 (***************************************************************************)
 (* Before(i, j) is a condition that implies that num[i] > 0 and, if j is   *)
@@ -246,12 +246,12 @@ Before(i,j) == /\ num[i] > 0
 
 (***************************************************************************)
 (* Inv is the complete inductive invariant.                                *)
-(***************************************************************************)  
-Inv == /\ TypeOK 
-       /\ \A i \in Procs : 
+(***************************************************************************)
+Inv == /\ TypeOK
+       /\ \A i \in Procs :
 \*             /\ (pc[i] \in {"ncs", "e1", "e2"}) => (num[i] = 0)
              /\ (pc[i] \in {"e4", "w1", "w2", "cs"}) => (num[i] # 0)
-             /\ (pc[i] \in {"e2", "e3"}) => flag[i] 
+             /\ (pc[i] \in {"e2", "e3"}) => flag[i]
              /\ (pc[i] = "w2") => (nxt[i] # i)
              /\ pc[i] \in {(*"e2",*) "w1", "w2"} => i \notin unchecked[i]
              /\ (pc[i] \in {"w1", "w2"}) =>
@@ -272,7 +272,7 @@ Inv == /\ TypeOK
 (* <1>1-<1>3 by simple temporal reasoning.                                 *)
 (***************************************************************************)
 THEOREM Spec => []MutualExclusion
-<1> USE N \in Nat DEFS Procs, TypeOK, Before, \prec, ProcSet 
+<1> USE N \in Nat DEFS Procs, TypeOK, Before, \prec, ProcSet
 <1>1. Init => Inv
   BY DEF Init, Inv
 <1>2. Inv /\ [Next]_vars => Inv'
@@ -331,7 +331,7 @@ THEOREM Spec => []MutualExclusion
        <4>5. \A ii \in Procs : (pc'[ii] \in {"w1", "w2"}) =>
                    \A j \in (Procs \ unchecked'[ii]) \ {ii} : Before(ii, j)'
          BY <3>2 DEF Inv
-       <4>6. \A ii \in Procs : 
+       <4>6. \A ii \in Procs :
                 /\ (pc'[ii] = "w2")
                 /\ \/ (pc'[nxt'[ii]] = "e2") /\ (ii \notin unchecked'[nxt'[ii]])
                    \/ pc'[nxt'[ii]] = "e3"
@@ -422,19 +422,19 @@ THEOREM Spec => []MutualExclusion
   BY SMT DEF MutualExclusion, Inv
 <1>4. QED
   BY <1>1, <1>2, <1>3, PTL DEF Spec
------------------------------------------------------------------------------- 
+------------------------------------------------------------------------------
 Trying(i) == pc[i] = "e1"
 InCS(i)   == pc[i] = "cs"
 DeadlockFree == (\E i \in Procs : Trying(i)) ~> (\E i \in Procs : InCS(i))
 StarvationFree == \A i \in Procs : Trying(i) ~> InCS(i)
 
 -----------------------------------------------------------------------------
-II == \A i \in Procs : 
+II == \A i \in Procs :
 \*        /\ (pc[i] \in {"ncs", "e1", "e2"}) => (num[i] = 0)             \* not found Test 1 (21993 states)
         /\ (pc[i] \in {"e4", "w1", "w2", "cs"}) => (num[i] # 0)        \* found Test 1
         /\ (pc[i] \in {"e2", "e3"}) => flag[i]                         \* found Test 1
         /\ (pc[i] = "w2") => (nxt[i] # i)                              \* not found Test 1 (12115 states) or with N=2
-        /\ pc[i] \in {"e2", "w1", "w2"} => i \notin unchecked[i]       \* found Test 1 
+        /\ pc[i] \in {"e2", "w1", "w2"} => i \notin unchecked[i]       \* found Test 1
         /\ (pc[i] \in {"w1", "w2"}) =>                                 \* found Test 1
               \A j \in (Procs \ unchecked[i]) \ {i} : Before(i, j)
         /\ /\ (pc[i] = "w2")                                           \* found Test 1
@@ -442,18 +442,18 @@ II == \A i \in Procs :
               \/ pc[nxt[i]] = "e3"
            => max[nxt[i]] >= num[i]
         /\ (pc[i] = "cs") => \A j \in Procs \ {i} : Before(i, j)     \* found Test 1
-             
+
 IInit == /\ num \in [Procs -> Nat]
          /\ flag \in [Procs -> BOOLEAN]
          /\ unchecked \in [Procs -> SUBSET Procs]
          /\ max \in [Procs ->  Nat]
          /\ nxt \in [Procs ->  Procs]
          /\ pc \in [Procs -> {"ncs", "e1", "e2", "e3",
-                               "e4", "w1", "w2", "cs", "exit"}] 
-         /\ II  
+                               "e4", "w1", "w2", "cs", "exit"}]
+         /\ II
 
 ISpec == IInit /\ [][Next]_vars
-             
+
 =============================================================================
 \* Modification History
 \* Last modified Sat Mar 07 08:41:02 CET 2020 by merz
@@ -469,5 +469,5 @@ IInit == /\ num \in [Procs -> Nat]
          /\ max \in [Procs ->  {0}] \* Nat]
          /\ nxt \in [Procs ->  {1}]
          /\ pc \in [Procs -> {"ncs", "e1", "e2", "e3",
-                               "e4", "w1", "w2", "cs"}] 
-         /\ II  
+                               "e4", "w1", "w2", "cs"}]
+         /\ II

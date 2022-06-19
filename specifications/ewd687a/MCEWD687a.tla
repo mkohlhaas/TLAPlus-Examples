@@ -7,17 +7,17 @@ L, P1, P2, P3
 ----
 
 \* MV CONSTANT definitions Procs
-const_1633116534008310000 == 
+const_1633116534008310000 ==
 {L, P1, P2, P3}
 ----
 
 \* CONSTANT definitions @modelParameterConstants:1Edges
-const_1633116534008311000 == 
+const_1633116534008311000 ==
 {<<L, P1>>, <<P1, P2>>, <<P1, P2>>, <<P2, P1>>, <<P2,P3>>}
 ----
 
 \* CONSTANT definitions @modelParameterConstants:2Leader
-const_1633116534008312000 == 
+const_1633116534008312000 ==
 L
 ----
 

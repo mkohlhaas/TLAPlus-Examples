@@ -3,7 +3,7 @@ EXTENDS EWD998, TLC, IOUtils, CSV
 
 \* The data collection below only works with TLC running in generation mode.
 \* Unless TLC runs with -Dtlc2.tool.impl.Tool.probabilistic=true (or -generate),
-\* the simulator generates all successor states from which it chooses one randomly. 
+\* the simulator generates all successor states from which it chooses one randomly.
 \* In "generate" mode, however, TLC randomly generates a (single) successor state.
 ASSUME TLCGet("config").mode = "generate"
 \* Do not artificially restrict the length of behaviors.
@@ -11,7 +11,7 @@ ASSUME TLCGet("config").depth = -1
 \* The algorithm terminates. Thus, do not check for deadlocks.
 ASSUME TLCGet("config").deadlock = FALSE
 \* Require a recent versions of TLC with support for the operators appearing below.
-ASSUME TLCGet("revision").timestamp >= 1628119427 
+ASSUME TLCGet("revision").timestamp >= 1628119427
 
 --------------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ ASSUME TLCGet("revision").timestamp >= 1628119427
 \* algorithm variants that might or might not make the algorithm more efficient.
 \* We define efficient here as how quickly termination is detected and how many
 \* rounds are executed, i.e., how many  InitiateProbe  actions occur on average.
-\* The way we are going to measure efficiency is by measuring the number of 
+\* The way we are going to measure efficiency is by measuring the number of
 \* steps between termination of  Environment  and the termination detection
 \* by  System  .  Additionally, we will count the number of all actions.
 \*
@@ -28,7 +28,7 @@ ASSUME TLCGet("revision").timestamp >= 1628119427
 \* round, iff the node is black.
 \* pt4: Return the token to the initiator iff the token is black.
 \*
-\* (pt3 and pt4 can be described as "aborting" an inconclusive token round by 
+\* (pt3 and pt4 can be described as "aborting" an inconclusive token round by
 \* directly returning the token to the initiator).
 \*
 \* The variants pt3 & pt4 come at the cost of all nodes knowing the identify of
@@ -38,7 +38,7 @@ ASSUME TLCGet("revision").timestamp >= 1628119427
 \* As we do not model a particular workload by constraining the behaviors
 \* satisfying  Environment, the TLC generator has to run long enough to create a
 \* sufficient amount of traces.
-FeatureFlags == 
+FeatureFlags ==
     {"pt1","pt2","pt3","pt4"}
 
 CONSTANT F
@@ -90,7 +90,7 @@ AtTermination ==
     ELSE TRUE
 
 AtTerminationDetected ==
-    \* This is just an ordinary state constraint (could have been an invariant 
+    \* This is just an ordinary state constraint (could have been an invariant
     \* too).  The disadvantage of a constraint (or inv) is that the antecedent
     \* is evaluated for *every* generated state, instead of just after the last
     \* state when we actually want the consequent to be evalauted.
@@ -122,7 +122,7 @@ CONSTANTS
     N <- Nodes
     F <- Features
 
-SPECIFICATION 
+SPECIFICATION
     SpecOpts
 
 ACTION_CONSTRAINT

@@ -2,7 +2,7 @@
 EXTENDS MemoryInterface, RealTime
 CONSTANT Rho
 ASSUME (Rho \in Real) /\ (Rho > 0)
- 
+
    ---------------- MODULE Inner ----------------------------------
    EXTENDS InternalMemory
    Respond(p) == (ctl[p] # "rdy") /\ (ctl'[p] = "rdy")

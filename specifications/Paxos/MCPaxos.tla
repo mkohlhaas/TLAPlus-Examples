@@ -4,11 +4,11 @@ EXTENDS Paxos, TLC
 CONSTANTS a1, a2, a3  \* acceptors
 CONSTANTS v1, v2      \* Values
 
-MCAcceptor == {a1} \* {a1, a2, a3} 
-MCValue    == {v1} \* {v1, v2} 
-MCQuorum == {{a1}} \* {{a1, a2}, {a1, a3}, {a2, a3}} 
+MCAcceptor == {a1} \* {a1, a2, a3}
+MCValue    == {v1} \* {v1, v2}
+MCQuorum == {{a1}} \* {{a1, a2}, {a1, a3}, {a2, a3}}
 MCMaxBallot == 1
-MCBallot == 0..MCMaxBallot 
+MCBallot == 0..MCMaxBallot
 MCSymmetry == Permutations(MCAcceptor) \cup Permutations(MCValue)
 
 VotingSpecBar == V!Spec
@@ -16,7 +16,7 @@ VotingSpecBar == V!Spec
 (***************************************************************************)
 (* For checking liveness.                                                  *)
 (***************************************************************************)
-MCLSpec == /\ Spec 
+MCLSpec == /\ Spec
            /\ WF_vars(Phase1a(MCMaxBallot))
            /\ \A v \in Value : WF_vars(Phase2a(MCMaxBallot,v))
            /\ \A a \in {a1, a2} : WF_vars(Phase1b(a) \/ Phase2b(a))
@@ -38,7 +38,7 @@ ITypeOK == /\ maxBal \in [Acceptor -> Ballot \cup {-1}]
            /\ maxVal \in [Acceptor -> Value \cup {None}]
            /\ msgs \in SUBSET Message
 
-IInv == /\ ITypeOK       
+IInv == /\ ITypeOK
         /\ Inv!2    \* Inv!2 is the second conjunct of the definition of Inv.
         /\ Inv!3
         /\ Inv!4

@@ -9,7 +9,7 @@ $ java -Dtlc2.value.Values.width=99999 -jar tla2tools.jar \
  values when printed by TLC. Otherwise, add more sophisticated regex matching
 * "noTE" prevents TLC from generating a trace evaluation spec
 * "generate" to not exhaustively check the spec but quickly generate some trace
-* "depth" has to be greater than the limit in  Inv  below.  By default, the 
+* "depth" has to be greater than the limit in  Inv  below.  By default, the
   generator creates traces of length 100
 
 
@@ -29,11 +29,11 @@ EXTENDS EWD998ChanID, TLC, TLCExt, Json
 MCInit ==
   (* Rule 0 *)
   /\ counter = [n \in Node |-> 0] \* c properly initialized
-  /\ inbox = [n \in Node |-> IF n = Initiator 
-                              THEN << [type |-> "tok", q |-> 0, color |-> "black" ] >> 
+  /\ inbox = [n \in Node |-> IF n = Initiator
+                              THEN << [type |-> "tok", q |-> 0, color |-> "black" ] >>
                               ELSE <<>>] \* with empty channels.
   (* EWD840 *)
-  \* Reduce the number of initial states. 
+  \* Reduce the number of initial states.
   /\ active \in [Node -> {TRUE}]
   /\ color \in [Node -> {"white"}]
   (* Each node maintains a (local) vector clock *)
@@ -48,7 +48,7 @@ Inv ==
     \* A trace ending with  terminationDetected = TRUE  that is longer than 22
      \* steps.
     \*EWD998Chan!EWD998!terminationDetected => TLCGet("level") < 23
-    
+
 \* Temporal logics got rid of explicit state indices.  However, when we transform
  \* counter-examples, the annoyances of handling indices re-surface.  Especially,
  \* we are dealing with *finite* prefixes of behaviors.
@@ -67,11 +67,11 @@ host ==
        ELSE CHOOSE n \in Node:
             trc[lvl].clock[n] # trc[lvl-1].clock[n]
 
-Alias == 
+Alias ==
     [
         Host |-> host
         ,Clock |-> ToJsonObject(clock[host])
-        
+
         ,active |-> active
         ,color |-> color
         ,counter |-> counter

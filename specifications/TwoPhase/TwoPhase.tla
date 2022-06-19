@@ -22,10 +22,10 @@
 EXTENDS Naturals, TLAPS
 
 CONSTANT XInit(_), XAct(_, _, _)
- 
+
 VARIABLE p, c, x
 
-Init == /\ p = 0 
+Init == /\ p = 0
         /\ c = 0
         /\ XInit(x)
 
@@ -91,6 +91,6 @@ THEOREM Implementation == Spec => A!Spec
     BY <2>1, <2>2, PTL
   <2>. QED
     BY <2>1, <2>3, <1>1, PTL DEF Spec, A!Spec
-  
+
 ==============================================================
 \* Generated at Sat Oct 31 03:15:55 PDT 2009

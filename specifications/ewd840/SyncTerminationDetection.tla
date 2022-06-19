@@ -9,7 +9,7 @@ ASSUME NAssumption == N \in Nat \ {0}
 
 Node == 0 .. N-1
 
-VARIABLES 
+VARIABLES
   active,               \* activation status of nodes
   terminationDetected   \* has termination been detected?
 

@@ -56,7 +56,7 @@ Nbrs(n) == {m \in Nodes : {m, n} \in Edges}
 (***************************************************************************)
 (* The spec is a straightforward TLA+ spec of the algorithm described      *)
 (* above.                                                                  *)
-(***************************************************************************)       
+(***************************************************************************)
 VARIABLES mom, dist
 vars == <<mom, dist>>
 
@@ -65,9 +65,9 @@ TypeOK == /\ mom  \in [Nodes -> Nodes]
 
 Init == /\ mom = [n \in Nodes |-> n]
         /\ dist = [n \in Nodes |-> IF n = Root THEN 0 ELSE MaxCardinality]
-        
+
 Next == \E n \in Nodes :
-          \E m \in Nbrs(n) : 
+          \E m \in Nbrs(n) :
              /\ dist[m] < 1 + dist[n]
              /\ \E d \in (dist[m]+1) .. (dist[n] - 1) :
                     /\ dist' = [dist EXCEPT ![n] = d]
@@ -89,12 +89,12 @@ Spec == Init /\ [][Next]_vars /\ WF_vars(Next)
 (* satisfied when the algorithm terminates) that implies that mom has the  *)
 (* correct value.                                                          *)
 (***************************************************************************)
-PostCondition == 
+PostCondition ==
   \A n \in Nodes :
-    \/ /\ n = Root 
+    \/ /\ n = Root
        /\ dist[n] = 0
        /\ mom[n] = n
-    \/ /\ dist[n] = MaxCardinality 
+    \/ /\ dist[n] = MaxCardinality
        /\ mom[n] = n
        /\ \A m \in Nbrs(n) : dist[m] = MaxCardinality
     \/ /\ dist[n] \in 1..(MaxCardinality-1)
@@ -115,7 +115,7 @@ Safety == []((~ ENABLED Next) => PostCondition)
 (* This formula asserts the liveness condition that the algorithm          *)
 (* eventually terminates                                                   *)
 (***************************************************************************)
-Liveness == <>(~ ENABLED Next) 
+Liveness == <>(~ ENABLED Next)
 -----------------------------------------------------------------------------
 (***************************************************************************)
 (* These properties of the spec can be checked with the model that should  *)

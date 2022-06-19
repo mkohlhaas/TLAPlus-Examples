@@ -4,7 +4,7 @@ VARIABLE opQ, mem
 -----------------------------------------------------------------------------
 Done    == CHOOSE v : v \notin Reg
 -----------------------------------------------------------------------------
-DataInvariant == 
+DataInvariant ==
   /\ RegFileTypeInvariant
   /\ opQ \in [Proc -> Seq([req : Request, reg : Reg \cup {Done}])]
   /\ mem \in [Adr -> Val]
@@ -24,10 +24,10 @@ IssueRequest(proc, req, reg) ==
 
 RespondToRd(proc, reg) ==
   /\ regFile[proc][reg].op = "Rd"
-  /\ \E val \in Val : 
+  /\ \E val \in Val :
        /\ regFile' = [regFile EXCEPT ![proc][reg].val = val,
                                      ![proc][reg].op  = "Free"]
-       /\ opQ' = LET idx == CHOOSE i \in DOMAIN opQ[proc] : 
+       /\ opQ' = LET idx == CHOOSE i \in DOMAIN opQ[proc] :
                                          opQ[proc][i].reg = reg
                  IN [opQ EXCEPT ![proc][idx].req.val = val,
                                 ![proc][idx].reg     = Done ]
@@ -42,15 +42,15 @@ RespondToWr(proc, reg) ==
 
 RemoveOp(proc) ==
   /\ opQ[proc] # << >>
-  /\ Head(opQ[proc]).reg = Done  
+  /\ Head(opQ[proc]).reg = Done
   /\ mem' = IF Head(opQ[proc]).req.op = "Rd"
               THEN mem
-              ELSE [mem EXCEPT ![Head(opQ[proc]).req.adr] = 
+              ELSE [mem EXCEPT ![Head(opQ[proc]).req.adr] =
                                    Head(opQ[proc]).req.val]
   /\ opQ' = [opQ EXCEPT ![proc] = Tail(@)]
   /\ UNCHANGED regFile
 
-Internal(proc)  == 
+Internal(proc)  ==
     /\ RemoveOp(proc)
     /\ (Head(opQ[proc]).req.op = "Rd") =>
             (mem[Head(opQ[proc]).req.adr] = Head(opQ[proc]).req.val)
@@ -63,10 +63,10 @@ Next == \E proc \in Proc:
            \/ Internal(proc)
 -----------------------------------------------------------------------------
 Spec ==
-  /\ Init 
+  /\ Init
   /\ [][Next]_<<regFile, opQ, mem>>
   /\ \A proc \in Proc, reg \in Reg :
-        WF_<<regFile, opQ, mem>>(RespondToRd(proc, reg) 
+        WF_<<regFile, opQ, mem>>(RespondToRd(proc, reg)
                                         \/ RespondToWr(proc, reg))
   /\ \A proc \in Proc : WF_<<regFile, opQ, mem>>(RemoveOp(proc))
 

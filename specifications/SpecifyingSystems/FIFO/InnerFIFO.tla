@@ -31,7 +31,7 @@ RRcv == /\ OutChan!Rcv          \* Receive message from channel `out'.
 Next == \/ \E msg \in Message : SSend(msg)
         \/ BufRcv
         \/ BufSend
-        \/ RRcv 
+        \/ RRcv
 
 Spec == Init /\ [][Next]_<<in, out, q>>
 -----------------------------------------------------------------------------

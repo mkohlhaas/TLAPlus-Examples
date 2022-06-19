@@ -11,7 +11,7 @@ CONSTANT MaxQLen
     (* at most MaxQLen, for all p.                                         *)
     (***********************************************************************)
 
-MCNat == 0 .. MaxQLen 
+MCNat == 0 .. MaxQLen
   (*************************************************************************)
   (* The liveness condition contains quantification over the set           *)
   (*                                                                       *)
@@ -27,13 +27,13 @@ MCInitMem == [adr \in Adr |-> CHOOSE v \in Val  : TRUE]
   (* We have to tell TLC what value to use for the constant parameter      *)
   (* InitMem.  We let it use MCInitMem, an arbitrary choice.               *)
   (*************************************************************************)
-  
+
 Constraint == \A p \in Proc : Len(opQ[p]) \leq MaxQLen
   (*************************************************************************)
   (* The constraint used to bound the size of the state space.             *)
   (*************************************************************************)
-  
-AlwaysResponds == 
+
+AlwaysResponds ==
   (*************************************************************************)
   (* Some simple liveness properties, implied by the fact that every       *)
   (* request eventually generates a response.                              *)

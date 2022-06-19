@@ -127,7 +127,7 @@ LEMMA NotContainsSend ==
 BY DEF Contains, AtMostOne
 
 LEMMA AtMostOneSend ==
-  ASSUME NEW s \in Seq(Message), NEW mtype, AtMostOne(s, mtype), 
+  ASSUME NEW s \in Seq(Message), NEW mtype, AtMostOne(s, mtype),
          NEW m \in Message, m.type # mtype
   PROVE  AtMostOne(Append(s,m), mtype)
 BY DEF AtMostOne
@@ -185,7 +185,7 @@ CommInv(p) ==
                \/ /\ q \notin ack[p] /\ Contains(pq,"req")
                   /\ ~ Contains(qp,"ack") /\ Precedes(pq,"rel","req")
 
-BasicInv == 
+BasicInv ==
   /\ \A p,q \in Proc : NetworkInv(p,q)
   /\ \A p \in Proc : CommInv(p)
 
@@ -465,7 +465,7 @@ ClockInvInner(p,q) ==
   LET pq == network[p][q]
       qp == network[q][p]
   IN  /\ \A i \in 1 .. Len(pq) : pq[i].type = "req" => pq[i].clock = req[p][p]
-      /\ Contains(qp, "ack") \/ q \in ack[p] => 
+      /\ Contains(qp, "ack") \/ q \in ack[p] =>
              /\ req[q][p] = req[p][p]
              /\ clock[q] > req[p][p]
              /\ Precedes(qp, "ack", "req") =>
@@ -567,7 +567,7 @@ THEOREM ClockInvariant == Spec => []ClockInv
     <3>1. /\ network[k][n] # << >>
           /\ m.type = "req"
           /\ req' = [req EXCEPT ![n][k] = m.clock]
-          /\ clock' = [clock EXCEPT ![n] = IF m.clock > clock[n] THEN m.clock + 1 
+          /\ clock' = [clock EXCEPT ![n] = IF m.clock > clock[n] THEN m.clock + 1
                                                                  ELSE clock[n]+1]
           /\ network' = [network EXCEPT ![k][n] = Tail(@),
                                         ![n][k] = Append(@, AckMessage)]
@@ -596,7 +596,7 @@ THEOREM ClockInvariant == Spec => []ClockInv
               /\ q \notin ack'[p]
               /\ p \notin crit'
           BY <3>1, <3>2, <4>1
-        <5>4. ASSUME Precedes(qp', "ack", "req"), 
+        <5>4. ASSUME Precedes(qp', "ack", "req"),
                      NEW i \in 1 .. Len(qp'), qp'[i].type = "req"
               PROVE  FALSE
           BY <3>1, <4>1, <5>4, Z3 DEF Precedes

@@ -48,12 +48,12 @@ EXTENDS Integers
 (* There is no reason why the processes need to be numbered from 1 to N.   *)
 (* So, we assume an arbitrary set Proc of process names.                   *)
 (***************************************************************************)
-CONSTANT Proc 
+CONSTANT Proc
 
 (*********
 Here is the PlusCal version of this algorithm.
 
- --algorithm Mutex 
+ --algorithm Mutex
  { variables b = [i \in Proc |-> TRUE], c = [i \in Proc |-> TRUE], k \in Proc;
    process (P \in Proc)
      variable temp ;
@@ -67,11 +67,11 @@ Here is the PlusCal version of this algorithm.
               Li4a: c[self] := FALSE;
                     temp := Proc \ {self};
               Li4b: while (temp # {})
-                     { with (j \in temp) 
+                     { with (j \in temp)
                         { temp := temp \ {j};
                           if (~c[j]) { goto Li1 }
                         }
-                     };                       
+                     };
                 cs: skip;  \* the critical section
                Li5: c[self] := TRUE;
                Li6: b[self] := TRUE;
@@ -82,7 +82,7 @@ Here is the PlusCal version of this algorithm.
 Notes on the PlusCal version:
 
 1. Label Li3d is required by the translation.  It could be eliminated by
-   adding a then clause to the if statement of Li3b and putting the goto 
+   adding a then clause to the if statement of Li3b and putting the goto
    in both branches of the if statement.
 
 2. The for loop in section Li4 of the original has been changed to
@@ -154,12 +154,12 @@ Li4a(self) == /\ pc[self] = "Li4a"
 Li4b(self) == /\ pc[self] = "Li4b"
               /\ IF temp[self] # {}
                     THEN /\ \E j \in temp[self]:
-                              /\ temp' = [temp EXCEPT 
+                              /\ temp' = [temp EXCEPT
                                             ![self] = temp[self] \ {j}]
                               /\ IF ~c[j]
-                                    THEN /\ pc' = [pc EXCEPT 
+                                    THEN /\ pc' = [pc EXCEPT
                                                      ![self] = "Li1"]
-                                    ELSE /\ pc' = [pc EXCEPT 
+                                    ELSE /\ pc' = [pc EXCEPT
                                                      ![self] = "Li4b"]
                     ELSE /\ pc' = [pc EXCEPT ![self] = "cs"]
                          /\ UNCHANGED temp
@@ -208,7 +208,7 @@ is an invariant.
 
 
 ****************************************************************************)
-MutualExclusion == \A i, j \in Proc : 
+MutualExclusion == \A i, j \in Proc :
                      (i # j) => ~ /\ pc[i] = "cs"
                                   /\ pc[j] = "cs"
 (***************************************************************************)
@@ -241,7 +241,7 @@ MutualExclusion == \A i, j \in Proc :
 (* Li0, and it is in its critical section when it is at control point cs,  *)
 (* the following formula asserts deadlock freedom.                         *)
 (***************************************************************************)
-DeadlockFree == \A i \in Proc : 
+DeadlockFree == \A i \in Proc :
                      (pc[i] = "Li0") ~> (\E j \in Proc : pc[j] = "cs")
 (***************************************************************************)
 (* Dijkstra's algorithm is deadlock free only under the assumption of      *)
@@ -269,7 +269,7 @@ DeadlockFree == \A i \in Proc :
 (* You can use TLC to show that the algorithm is not starvation free by    *)
 (* producing a counterexample trace.                                       *)
 (***************************************************************************)
-StarvationFree == \A i \in Proc : 
+StarvationFree == \A i \in Proc :
                      (pc[i] = "Li0") ~> (pc[i] = "cs")
 
 (***************************************************************************)
@@ -295,7 +295,7 @@ StarvationFree == \A i \in Proc :
 (* not in its non-critical section.  This is accomplished by taking the    *)
 (* following formula LSpec as the algorithm's specification.               *)
 (***************************************************************************)
-LSpec == Init /\ [][Next]_vars 
+LSpec == Init /\ [][Next]_vars
            /\ \A self \in Proc: WF_vars((pc[self] # "ncs") /\ P(self))
 
 (***************************************************************************)
@@ -315,8 +315,8 @@ LSpec == Init /\ [][Next]_vars
 (* this by saying where control in process i is NOT, which we do in the    *)
 (* following property.                                                     *)
 (***************************************************************************)
-DeadlockFreedom == 
-    \A i \in Proc : 
+DeadlockFreedom ==
+    \A i \in Proc :
       (pc[i] \notin {"Li5", "Li6", "ncs"}) ~> (\E j \in Proc : pc[j] = "cs")
 (***************************************************************************)
 (* Do you see why it's not necessary to include "cs" in the set of values  *)

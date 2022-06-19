@@ -24,7 +24,7 @@ SVGDefs ==
 ----------------------------------------------------------------------------
 
 Legend ==
-    (* 
+    (*
        Legend with four rows of labels (text) whose top-left point is located at BasePos:
        1: The current state ordinal.
        2: The action from the predecessor state to the current state.
@@ -53,7 +53,7 @@ GraphNodePos ==
     (* A function from processes to x,y coordinates: [ Procs -> [x: Nat, y: Nat] *)
     (* The coordinates are choosen according to the given layout algorithm parameterized *)
     (* by the given "options" record. *)
-    NodesOfDirectedMultiGraph(Procs, Edges, 
+    NodesOfDirectedMultiGraph(Procs, Edges,
         [algo |-> "Sugiyama",
          view_width |-> 1000, view_height |-> 1800, layering |-> "LONGEST_PATH",
          node_width |-> NodeDimension * 3, node_height |-> NodeDimension * 3])
@@ -64,8 +64,8 @@ N ==
     (* An SVG group containing rectangles denoting the graph of processes. Approximately at *)
     (* the center of each node, a text indicates the processes name (Procs). *)
     (* A black square denotes an idle process, a red circle an active one. *)
-    LET NS[ p \in Procs ] ==         
-        LET coord == GraphNodePos[p]    
+    LET NS[ p \in Procs ] ==
+        LET coord == GraphNodePos[p]
             id == Text(coord.x + ArrowPosOffset - 5, coord.y + ArrowPosOffset + 7,
                         ToString(p), [fill |-> "white"])
             node == Rect(coord.x, coord.y, NodeDimension, NodeDimension,
@@ -75,7 +75,7 @@ N ==
         IN Group(<<node, id>>, <<>>)
     IN Group(NS, <<>>)
 
-E == 
+E ==
     (* An SVG group containing lines denoting the (graph) edges. An line, *)
     (* connecting a from and to node, is annotated with three labels: *)
     LET ES[ e \in Edges ] ==
@@ -84,23 +84,23 @@ E ==
             (*    or the empty string if there are no messages in flight. An in-flight message is   *)
             (*    denoted by an "m" and an ACK by an "a", respectively. *)
             mpt == PointOnLine(from, to, 2)
-            messages == Text(mpt.x, mpt.y, 
+            messages == Text(mpt.x, mpt.y,
                 Repeat("m", msgs[e]) \o Repeat("a", acks[e]), <<>>)
             (* 2: At the quad-point towards the source of the edge, a negative integer denotes the  *)
             (*    number of unacknowledged messages. If there are zero unacknowledged messages, the *)
             (*    integer made invisible to reduce visual clutter. *)
             fpt == PointOnLine(from, to, 4)
-            sent == Text(fpt.x, fpt.y, 
-                IF sentUnacked[e] > 0 THEN ToString(-1 * sentUnacked[e]) ELSE "", 
-                <<>>) 
+            sent == Text(fpt.x, fpt.y,
+                IF sentUnacked[e] > 0 THEN ToString(-1 * sentUnacked[e]) ELSE "",
+                <<>>)
             (* 3: At the quad-point towards the sink of the edge, a natural denotes the number of *)
             (*    ACKs that the sink still has to sent. Again, if there are zero ACKs to be sent  *)
             (*    the natural is invisible. *)
             tpt == PointOnLine(to, from, 4)
-            rcvd == Text(tpt.x, tpt.y, 
-                IF rcvdUnacked[e] > 0 THEN ToString(rcvdUnacked[e]) ELSE "", 
-                <<>>) 
-            line == Line(from.x + ArrowPosOffset, from.y + ArrowPosOffset, 
+            rcvd == Text(tpt.x, tpt.y,
+                IF rcvdUnacked[e] > 0 THEN ToString(rcvdUnacked[e]) ELSE "",
+                <<>>)
+            line == Line(from.x + ArrowPosOffset, from.y + ArrowPosOffset,
                             to.x + ArrowPosOffset, to.y + ArrowPosOffset,
                             \* A solid, black line with an arrow at its tip denotes an edge.
                             [ stroke |-> "black", stroke_width |-> "2",
@@ -108,11 +108,11 @@ E ==
         IN Group(<<line, messages, sent, rcvd>>, <<>>)
     IN Group(ES, <<>>)
 
-U == 
+U ==
     (* An SVG group containing the lines visualizing the upEdges of the overlay tree. *)
     LET UE[ u \in {upEdge[p] : p \in DOMAIN upEdge} \ {NotAnEdge} ] ==
         LET from == GraphNodePos[u[1]] to == GraphNodePos[u[2]]
-            line == Line(from.x + ArrowPosOffset, from.y + ArrowPosOffset, 
+            line == Line(from.x + ArrowPosOffset, from.y + ArrowPosOffset,
                         to.x + ArrowPosOffset, to.y + ArrowPosOffset,
                         (* An upEdge is denoted by a dashed, orange line. *)
                         [stroke |-> "orange", stroke_dasharray |-> "5", stroke_width |-> "5"])
@@ -120,7 +120,7 @@ U ==
     IN Group(UE, <<>>)
 
 Frame ==
-    (* Combine the (SVG) definitions, legend, processes, edges, and upEdges into a single *) 
+    (* Combine the (SVG) definitions, legend, processes, edges, and upEdges into a single *)
     (* (SVG) frame as a visualization of the current TLA+ state. *)
     SVGDefs \o SVGElemToString(Group(<<Legend, E, U, N>>, <<>>))
 
@@ -141,14 +141,14 @@ Alias == [
     \* acks |-> acks
 
     (* https://animator.tlapl.us (interactively explore the animation) *)
-    _animator |-> 
+    _animator |->
         Frame
         ,
     (* The resulting set of EWD687a_anim_???.svg files can be rendered as an animated gif with:    *)
     (*   $ convert -delay 100 -density 200 *.svg EWD687a.gif *)
     (* An animated gif is portable across browser, but cannot be advanced/reversed manually,       *)
     (* unless a user installs a browser plugin such as https://github.com/0ui/gif-scrubber.        *)
-    file |-> 
+    file |->
         \* The animator nests frame in an SVG box.  With a file, this is done explicitly.
         ToFile("<svg viewBox='0 0 1400 1200'>" \o Frame \o "</svg>", "EWD687a_anim_", TLCGet("level"), 3, ".svg")
     ]
@@ -185,12 +185,12 @@ CONSTANTS L, P1, P2, P3, P4, P5
 \* \* Print the randomly choosen set of edges.
 \* ASSUME PrintT(<<"Edges", Edges>>)
 
-\* A specific network of processes. 
+\* A specific network of processes.
 Network ==
-    { <<L, P1>>, <<L, P2>>, <<L, P3>>, 
+    { <<L, P1>>, <<L, P2>>, <<L, P3>>,
         <<P1, P2>>, <<P1, P4>>,
-        <<P2, P3>>, <<P2, P5>>, 
-        <<P4, P3>>, <<P4, P5>>, 
+        <<P2, P3>>, <<P2, P5>>,
+        <<P4, P3>>, <<P4, P5>>,
         <<P3, P1>>, <<P3, P5>>,
         <<P5, P4>>}
 

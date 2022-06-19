@@ -1,4 +1,4 @@
------------------------------ MODULE Consensus ------------------------------ 
+----------------------------- MODULE Consensus ------------------------------
 (***************************************************************************)
 (* This is an very abstract specification of the consensus problem, in     *)
 (* which a set of processes must choose a single value.  We abstract away  *)
@@ -21,7 +21,7 @@ EXTENDS Naturals, FiniteSets
   (* natural numbers and the Cardinality operator, where Cardinality(S) is *)
   (* the number of elements in the set S, if S is finite.                  *)
   (*************************************************************************)
-CONSTANT Value 
+CONSTANT Value
   (*************************************************************************)
   (* The set of all values that can be chosen.                             *)
   (*************************************************************************)
@@ -38,7 +38,7 @@ VARIABLE chosen
 (* that the spec should satisfy.                                           *)
 (***************************************************************************)
 TypeOK == /\ chosen \subseteq Value
-          /\ IsFiniteSet(chosen) 
+          /\ IsFiniteSet(chosen)
 
 (***************************************************************************)
 (* The initial predicate describing the possible initial state of          *)
@@ -57,7 +57,7 @@ Next == /\ chosen = {}
 (***************************************************************************)
 (* The TLA+ temporal formula that is the spec.                             *)
 (***************************************************************************)
-Spec == Init /\ [][Next]_chosen 
+Spec == Init /\ [][Next]_chosen
 
 -----------------------------------------------------------------------------
 (***************************************************************************)
@@ -80,7 +80,7 @@ THEOREM Invariance  ==  Spec => []Inv
 
 <1>3. QED
   BY <1>1, <1>2 DEF Spec
-  
+
 (***************************************************************************)
 (* If you are reading this specification in the Toolbox as you should be   *)
 (* (either the source file or its pretty-printed version), then you have   *)

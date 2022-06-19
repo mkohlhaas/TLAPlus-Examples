@@ -1,11 +1,11 @@
 -------------------------- MODULE SingleLaneBridge --------------------------
 
 \* A bridge over a river is only wide enough to permit a single lane of traffic.
-\* Consequently, cars can only move concurrently if they are moving in the same 
+\* Consequently, cars can only move concurrently if they are moving in the same
 \* direction. A safety violation occurs if two cars moving in different directions
 \* enter the bridge at the same time.
 \* To visualize the problem, refer to https://flylib.com/books/en/2.752.1.48/1/
-   
+
 EXTENDS Naturals, FiniteSets, Sequences
 
 CONSTANTS CarsRight, CarsLeft, Bridge, Positions
@@ -25,8 +25,8 @@ ASSUME StartPos < StartBridge /\ EndPos > EndBridge /\ Cardinality(Bridge) < Car
 
 
 RECURSIVE SeqFromSet(_)
-SeqFromSet(S) == 
-  IF S = {} THEN << >> 
+SeqFromSet(S) ==
+  IF S = {} THEN << >>
   ELSE LET x == CHOOSE x \in S : TRUE
        IN  << x >> \o SeqFromSet(S \ {x})
 
@@ -72,7 +72,7 @@ EnterBridge ==
         /\ Location' = [ Location EXCEPT ![Head(WaitingBeforeBridge)] = NextLocation(Head(WaitingBeforeBridge)) ]
         /\ WaitingBeforeBridge' = Tail(WaitingBeforeBridge)
 
-Init == 
+Init ==
     /\ Location = [ c \in Cars |-> IF c \in CarsRight THEN EndPos ELSE StartPos  ]
     /\ WaitingBeforeBridge = SeqFromSet(CarsBeforeBridge)
 
@@ -95,14 +95,14 @@ Invariants ==
     /\ Cardinality(CarsInBridge) < Cardinality(Bridge) + 1
     \* Two cars of different directions can never be in the bridge
     /\ \A <<r,l>> \in CarsRight \X CarsLeft :
-        ~ (Location[r] \in Bridge /\ Location[l] \in Bridge) 
+        ~ (Location[r] \in Bridge /\ Location[l] \in Bridge)
 
 TypeOK ==
     /\ Location \in [ Cars -> Positions ]
     /\ Len(WaitingBeforeBridge) <= Cardinality(Cars)
 
 CarsInBridgeExitBridge ==
-    \* All cars eventually exit the Bridge 
+    \* All cars eventually exit the Bridge
     \A car \in Cars : Location[car] \in Bridge ~> Location[car] \notin Bridge
 
 CarsEnterBridge ==

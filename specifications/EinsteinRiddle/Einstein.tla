@@ -39,17 +39,17 @@ EXTENDS Naturals, FiniteSets
 \* would be evaluated faster.  However, TLC!Permutations equals a
 \* set of records whereas Permutation below equals a set of tuples/
 \* sequences.  Also, Permutation expects Cardinality(S) = 5.
-Permutation(S) == 
+Permutation(S) ==
     { p \in [ 1..5 -> S ] :
         /\ p[2] \in S \ {p[1]}
         /\ p[3] \in S \ {p[1], p[2]}
         /\ p[4] \in S \ {p[1], p[2], p[3]}
         /\ p[5] \in S \ {p[1], p[2], p[3], p[4]} }
-                
+
 \* In most specs, the following parameterization would be defined as
 \* constants.  Given that Einstein's riddle has only this
 \* parameterization, the constants are replaced with constant-level
-\* operators.  As a side-effect, TLC evaluates them eagerly at startup, 
+\* operators.  As a side-effect, TLC evaluates them eagerly at startup,
 \* and Apalache successfully determines their types.
 NATIONALITIES == Permutation({ "brit", "swede", "dane", "norwegian", "german" })
 DRINKS == Permutation({ "beer", "coffee", "mylk", "tea", "water" })

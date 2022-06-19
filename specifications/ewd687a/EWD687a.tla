@@ -128,9 +128,9 @@ ASSUME  /\ \* Every edge is a pair of distinct processes
              /\ (e \in Procs \X Procs)
              /\ (e[1] # e[2])
         /\ \* The leader is one of the processes.
-           Leader \in Procs        
+           Leader \in Procs
         /\ \* The leader has only outgoing edges, so it can't
-           \* receive computation messages. 
+           \* receive computation messages.
            InEdges(Leader) = {}
 
 (***************************************************************************)
@@ -149,7 +149,7 @@ NotAnEdge  == << >>
 (***************************************************************************)
 (* We declare the following variables:                                     *)
 (***************************************************************************)
-VARIABLES 
+VARIABLES
     (***********************************************************************)
     (* For each process p, the value of active[p] is a boolean.  If the    *)
     (* processes p is currently busy computing, the value of active[p] is  *)
@@ -206,7 +206,7 @@ VARIABLES
     (***********************************************************************)
     upEdge,
 
-    
+
     (***********************************************************************)
     (* The difference between the variables above and msgs & acks below is *)
     (* that active, sentUnacked, and rcvdUnacked are conceptually          *)
@@ -267,8 +267,8 @@ TypeOK == /\ active \in [Procs -> BOOLEAN]
 (***************************************************************************)
 neutral(p) == /\ ~ active[p]
               /\ \A e \in InEdges(p) : rcvdUnacked[e] = 0
-              /\ \A e \in OutEdges(p) : sentUnacked[e] = 0 
- 
+              /\ \A e \in OutEdges(p) : sentUnacked[e] = 0
+
 (***************************************************************************)
 (* The initial predicate Init defines the values of all variables when the *)
 (* execution of this algorithm begins.                                     *)
@@ -284,7 +284,7 @@ Init == /\ active = [p \in Procs |-> p = Leader]
         /\ sentUnacked = [e \in Edges |-> 0]
         /\ rcvdUnacked = [e \in Edges |-> 0]
         /\ upEdge = [p \in Procs \ {Leader} |-> NotAnEdge]
- 
+
 ----------------------------------------------------------------------------
 
 (***************************************************************************)
@@ -296,11 +296,11 @@ Init == /\ active = [p \in Procs |-> p = Leader]
 (* which p sent the (computational) message.                               *)
 (***************************************************************************)
 SendMsg(p) == /\ active[p]
-              /\ \E e \in OutEdges(p) : 
-                     /\ sentUnacked' = [sentUnacked EXCEPT ![e] = @ + 1] 
+              /\ \E e \in OutEdges(p) :
+                     /\ sentUnacked' = [sentUnacked EXCEPT ![e] = @ + 1]
                      /\ msgs' = [msgs EXCEPT ![e] = @ + 1]
               /\ UNCHANGED <<active, acks, rcvdUnacked, upEdge>>
-                  
+
 (***************************************************************************)
 (* The  RcvAck  subaction describes what a process p does when an ack is   *)
 (* pending.  Process p receives the ack on an edge e s.t e[1] = p.  The    *)
@@ -339,17 +339,17 @@ SendAck(p) == /\ \E e \in InEdges(p) :
                         \* 2b.
                         \/ rcvdUnacked[e] > 1
                         \* 2c.  (compare neutral(p) with the following).
-                        \/ /\ ~ active[p] 
+                        \/ /\ ~ active[p]
                            /\ \A d \in OutEdges(p) : sentUnacked[d] = 0
                            /\ \A d \in InEdges(p) \ {e} : rcvdUnacked[d] = 0
-                     /\ rcvdUnacked' = [rcvdUnacked EXCEPT ![e] = @ - 1] 
+                     /\ rcvdUnacked' = [rcvdUnacked EXCEPT ![e] = @ - 1]
                      /\ acks' = [acks EXCEPT ![e] = @ + 1]
               /\ UNCHANGED <<active, msgs, sentUnacked>>
               \* Note that no check for p = Leader is needed because the
               \* leader never sends acks, due to  InEdges(Leader) = {} .
               /\ UP:: upEdge' = IF neutral(p)' THEN [upEdge EXCEPT ![p] = NotAnEdge]
                                                ELSE upEdge
- 
+
 (***************************************************************************)
 (* The subaction  RcvMsg  describes what a process p does when it receives *)
 (* a message.  Assuming a pending computational message on edge e          *)
@@ -361,9 +361,9 @@ SendAck(p) == /\ \E e \in InEdges(p) :
 (* message, the edge e becomes p's upEdge.  In other words, process        *)
 (* upEdge[p][1] becomes the parent of process p in the overlay tree.       *)
 (***************************************************************************)
-RcvMsg(p) == \E e \in InEdges(p) : 
-                  /\ msgs[e] > 0  
-                  /\ msgs' = [msgs EXCEPT ![e] = @ - 1]  
+RcvMsg(p) == \E e \in InEdges(p) :
+                  /\ msgs[e] > 0
+                  /\ msgs' = [msgs EXCEPT ![e] = @ - 1]
                   /\ rcvdUnacked' = [rcvdUnacked EXCEPT ![e] = @ + 1]
                   /\ active' = [active EXCEPT ![p] = TRUE]
                   \* If the process p is neutral, process q becomes the
@@ -371,7 +371,7 @@ RcvMsg(p) == \E e \in InEdges(p) :
                   /\ upEdge' = IF neutral(p) THEN [upEdge EXCEPT ![p] = e]
                                              ELSE upEdge
                   /\ UNCHANGED <<acks, sentUnacked>>
- 
+
 (***************************************************************************)
 (* A process p may finish its computation and become idle at any time.     *)
 (*                                                                         *)
@@ -383,14 +383,14 @@ Idle(p) == /\ active' = [active EXCEPT ![p] = FALSE]
            /\ UNCHANGED <<msgs, acks, sentUnacked, rcvdUnacked, upEdge>>
 
 ----------------------------------------------------------------------------
-           
+
 Next == \E p \in Procs : SendMsg(p) \/ SendAck(p) \/ RcvMsg(p) \/ RcvAck(p)
                              \/ Idle(p)
 
 Spec == Init /\ [][Next]_vars /\ WF_vars(Next)
- 
+
 ----------------------------------------------------------------------------
- 
+
 (***************************************************************************)
 (* Messages are never lost, thus, the difference of msgs[e], acks[e],      *)
 (* sentUnacked[e], and rcvdUnacked[e] for any e in Edges is always zero.   *)
@@ -443,7 +443,7 @@ THEOREM Spec => []DT1Inv
 (***************************************************************************)
 Terminated == /\ \A p \in Procs : ~active[p]
               /\ \A e \in Edges : msgs[e] = 0
-               
+
 (***************************************************************************)
 (* Main liveness property:                                                 *)
 (* If the computation terminates, then the leader eventually detects it.   *)
@@ -453,7 +453,7 @@ DT2 == Terminated ~> neutral(Leader)
 THEOREM Spec => DT2
 
 -----------------------------------------------------------------------------
-\* Counter-examples to the non-property below can be helpful to understand 
+\* Counter-examples to the non-property below can be helpful to understand
 \* the algorithm.
 
 StableUpEdge ==

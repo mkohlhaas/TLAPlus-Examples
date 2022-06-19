@@ -36,7 +36,7 @@ MeetingPlaceEmpty == CHOOSE e : e \notin ChameneosID
 TypeOK ==
    \* For each chameneoses, remember its current color and how many meetings it has been in.
    /\ chameneoses \in [ ChameneosID -> (Color \cup {Faded}) \X (0 .. N) ]
-   \* A meetingPlace (called Mall in the original paper) keeps track of the chameneoses 
+   \* A meetingPlace (called Mall in the original paper) keeps track of the chameneoses
    \* creature that is currently waiting to meet another creature.
    /\ meetingPlace \in ChameneosID \cup {MeetingPlaceEmpty}
 

@@ -6,15 +6,15 @@ VARIABLES allInput, chosen
 HInit == /\ Init
          /\ chosen = NotAnInput
          /\ allInput = {input[p] : p \in Proc}
-        
+
 HNext == /\ Next
          /\ chosen' = LET hasOutput(p) == output'[p] # NotAnInput
                       IN IF \/ chosen # NotAnInput
                             \/ \A p \in Proc : ~hasOutput(p)
                          THEN chosen
                          ELSE output'[CHOOSE p \in Proc : hasOutput(p)]
-         /\ allInput' = allInput \cup {input'[p] : p \in Proc}        
-        
+         /\ allInput' = allInput \cup {input'[p] : p \in Proc}
+
 
 HInv1 ==
   /\ input \in [Proc -> Inputs]
@@ -27,7 +27,7 @@ HInv1 ==
   /\ blocksRead \in [Proc -> [Disk -> SUBSET [block : DiskBlock , proc : Proc]]]
   /\ allInput \in SUBSET Inputs
   /\ chosen \in Inputs \cup {NotAnInput}
-  
+
 MajoritySet == {D \in SUBSET Disk : IsMajority(D)}
 
 blocksOf(p) ==
@@ -35,7 +35,7 @@ blocksOf(p) ==
   IN {dblock[p]} \cup {disk[d][p] : d \in Disk }
         \cup {br.block : br \in UNION{rdBy(q, d) : q \in Proc, d \in Disk}}
 
-allBlocks == UNION {blocksOf(p) : p \in Proc}  
+allBlocks == UNION {blocksOf(p) : p \in Proc}
 
 HInv2 ==
   /\ \A p \in Proc :

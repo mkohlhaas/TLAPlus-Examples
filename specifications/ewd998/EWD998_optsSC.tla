@@ -5,7 +5,7 @@ Features ==
     \* Features is redundantly defined in EWD998_opts.tla.  Could be extracted
     \* into common EWD998_opts_frob.ta, though.
     {"pt1","pt2","pt3","pt4"}
-        
+
 Nodes ==
     {7,29,43}
     \* {7, 19, 29, 37, 43}
@@ -20,7 +20,7 @@ CSVFile ==
 \* Write column headers to CSV file at startup of TLC instance that "runs"
 \* this script and forks the nested instances of TLC that simulate the spec
 \* and collect the statistics.
-ASSUME 
+ASSUME
     CSVWrite("Variant#Node#Length#T#InitiateProbe#PassToken#SendMsg#RecvMsg#Deactivate",
              <<>>, CSVFile)
 
@@ -29,7 +29,7 @@ ASSUME
 \* running this script.
 Cmd == LET absolutePathOfTLC == TLCGet("config").install
        IN <<"java", "-jar",
-          absolutePathOfTLC, 
+          absolutePathOfTLC,
           "-deadlock", "-noTE",
           "-depth", "-1",
           "-workers", "auto",
@@ -45,7 +45,7 @@ ASSUME \A features \in SUBSET Features:
          [] ret = 12 -> PrintT(<<n, features, "Safety violation">>)
          [] ret = 13 -> PrintT(<<n, features, "Liveness violation">>)
          \* For all other error codes, print TLC's error message.
-         [] OTHER    -> Print(<<n, features, 
+         [] OTHER    -> Print(<<n, features,
                                 IOEnvExec([N |-> n, F |-> features, Out |-> CSVFile], Cmd),
                                 "Error">>, FALSE)
 

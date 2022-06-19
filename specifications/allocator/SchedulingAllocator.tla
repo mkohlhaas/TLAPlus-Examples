@@ -38,7 +38,7 @@ TypeInvariant ==
 PermSeqs(S) ==
   LET perms[ss \in SUBSET S] ==
        IF ss = {} THEN { << >> }
-       ELSE LET ps == [ x \in ss |-> 
+       ELSE LET ps == [ x \in ss |->
                         { Append(sq,x) : sq \in perms[ss \ {x}] } ]
             IN  UNION { ps[x] : x \in ss }
   IN  perms[S]
@@ -57,7 +57,7 @@ Range(f) == { f[x] : x \in DOMAIN f }
 toSchedule == { c \in Clients : unsat[c] # {} /\ c \notin Range(sched) }
 
 (* Initially, no resources have been requested or allocated. *)
-Init == 
+Init ==
   /\ unsat = [c \in Clients |-> {}]
   /\ alloc = [c \in Clients |-> {}]
   /\ sched = << >>
@@ -93,7 +93,7 @@ Return(c,S) ==
 
 (* The allocator extends its schedule by adding the processes from     *)
 (* the set of clients to be scheduled, in some unspecified order.      *)
-Schedule == 
+Schedule ==
   /\ toSchedule # {}
   /\ \E sq \in PermSeqs(toSchedule) : sched' = sched \circ sq
   /\ UNCHANGED <<unsat,alloc>>
@@ -144,7 +144,7 @@ AllocatorInvariant ==  \** a lower-level invariant
      \A c \in toSchedule : unsat[c] # {}
   /\ \** clients never hold a resource requested by a process earlier
      \** in the schedule
-     \A i \in DOMAIN sched : \A j \in 1..i-1 : 
+     \A i \in DOMAIN sched : \A j \in 1..i-1 :
         alloc[sched[i]] \cap unsat[sched[j]] = {}
   /\ \** the allocator can satisfy the requests of any scheduled client
      \** assuming that the clients scheduled earlier release their resources
@@ -156,7 +156,7 @@ ClientsWillReturn ==
 ClientsWillObtain ==
   \A c \in Clients, r \in Resources : r \in unsat[c] ~> r \in alloc[c]
 
-InfOftenSatisfied == 
+InfOftenSatisfied ==
   \A c \in Clients : []<>(unsat[c] = {})
 
 (* Used for symmetry reduction with TLC.

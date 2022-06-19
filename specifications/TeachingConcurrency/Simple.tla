@@ -75,7 +75,7 @@ Termination == <>(\A self \in ProcSet: pc[self] = "Done")
 (*                                                                         *)
 (*    Spec => []PCorrect                                                   *)
 (***************************************************************************)
-PCorrect == (\A i \in 0..(N-1) : pc[i] = "Done") => 
+PCorrect == (\A i \in 0..(N-1) : pc[i] = "Done") =>
                 (\E i \in 0..(N-1) : y[i] = 1)
 
 (***************************************************************************)
@@ -87,7 +87,7 @@ PCorrect == (\A i \in 0..(N-1) : pc[i] = "Done") =>
 TypeOK == /\ x \in [0..(N-1) -> {0,1}]
           /\ y \in [0..(N-1) -> {0,1}]
           /\ pc \in [0..(N-1) -> {"a", "b", "Done"}]
- 
+
 (***************************************************************************)
 (* It's easy to use TLC to check that the following formula Inv is an      *)
 (* inductive invariant of the algorithm.  You should also be able check    *)
@@ -107,7 +107,7 @@ TypeOK == /\ x \in [0..(N-1) -> {0,1}]
 (* not sure why, but I find the implication to be a more natural way to    *)
 (* write the postcondition PCorrect and the disjunction to be a more       *)
 (* natural way to think about the inductive invariant.                     *)
-(***************************************************************************)                   
+(***************************************************************************)
 Inv ==  /\ TypeOK
         /\ \A i \in 0..(N-1) : (pc[i] \in {"b", "Done"}) => (x[i] = 1)
         /\ \/ \E i \in 0..(N-1) : pc[i] /= "Done"
@@ -124,7 +124,7 @@ Inv ==  /\ TypeOK
 THEOREM Spec => []PCorrect
 <1> USE NAssump
 <1>1. Init => Inv
-  BY DEF Init, Inv, TypeOK, ProcSet 
+  BY DEF Init, Inv, TypeOK, ProcSet
 <1>2. Inv /\ [Next]_vars => Inv'
   <2> SUFFICES ASSUME Inv,
                       [Next]_vars

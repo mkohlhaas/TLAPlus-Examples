@@ -63,11 +63,11 @@ define
 end define;
 
 \* This spawns 'NP' parallel Philosopher processes.
-\* 
+\*
 \* A process looks kind of like an object oriented class, but '\in 1..NP' means
 \* it's really just an integer between 1 and NP. Use 'self' to access that
 \* integer.
-\* 
+\*
 \* If you remove the 'fair' in 'fair process', each process can stop at any
 \* time and will never run again. Dining philosophers don't randomly die while
 \* clenching forks in the original problem, so let's keep the processes fair.
@@ -139,12 +139,12 @@ ProcSet == (1..NP)
 Init == (* Global variables *)
         /\ forks =         [
                        fork \in 1..NP |-> [
-                   
-                   
+
+
                            holder |-> IF fork = 2 THEN 1 ELSE fork,
-                   
-                   
-                   
+
+
+
                            clean |-> FALSE
                        ]
                    ]

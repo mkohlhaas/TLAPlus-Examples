@@ -131,7 +131,7 @@ TypeOK ==
 Correctness ==
   \A n \in Node : state[n] = "won" =>
      /\ initiator[n]
-     /\ \A m \in Node \ {n} : 
+     /\ \A m \in Node \ {n} :
            /\ state[m] = "lost"
            /\ initiator[m] => Id[m] > Id[n]
 

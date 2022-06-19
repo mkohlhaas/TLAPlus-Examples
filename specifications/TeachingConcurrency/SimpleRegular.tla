@@ -111,7 +111,7 @@ Termination == <>(\A self \in ProcSet: pc[self] = "Done")
 (***************************************************************************)
 (* The definition of PCorrect is the same as in module Simple.             *)
 (***************************************************************************)
-PCorrect == (\A i \in 0..(N-1) : pc[i] = "Done") => 
+PCorrect == (\A i \in 0..(N-1) : pc[i] = "Done") =>
                 (\E i \in 0..(N-1) : y[i] = 1)
 
 (***************************************************************************)
@@ -123,7 +123,7 @@ PCorrect == (\A i \in 0..(N-1) : pc[i] = "Done") =>
 TypeOK == /\ x \in [0..(N-1) -> (SUBSET {0, 1}) \ {{}}]
           /\ y \in [0..(N-1) -> {0,1}]
           /\ pc \in [0..(N-1) -> {"a1", "a2", "b", "Done"}]
-                    
+
 Inv ==  /\ TypeOK
         /\ \A i \in 0..(N-1) : (pc[i] \in {"b", "Done"}) => (x[i] = {1})
         /\ \/ \E i \in 0..(N-1) : pc[i] /= "Done"
@@ -140,7 +140,7 @@ Inv ==  /\ TypeOK
 THEOREM Spec => []PCorrect
 <1> USE NAssump
 <1>1. Init => Inv
-  BY DEF Init, Inv, TypeOK, ProcSet 
+  BY DEF Init, Inv, TypeOK, ProcSet
 <1>2. Inv /\ [Next]_vars => Inv'
   <2> SUFFICES ASSUME Inv,
                       [Next]_vars
@@ -162,7 +162,7 @@ THEOREM Spec => []PCorrect
                  PROVE  Inv'
       BY <2>3 DEF b
     <3> QED
-        BY <2>3, Z3 DEF b, Inv, TypeOK  
+        BY <2>3, Z3 DEF b, Inv, TypeOK
   <2>4. CASE UNCHANGED vars
     BY <2>4 DEF TypeOK, Inv, vars
   <2>5. QED
@@ -171,7 +171,7 @@ THEOREM Spec => []PCorrect
   BY DEF Inv, TypeOK, PCorrect
 <1>4. QED
   BY <1>1, <1>2, <1>3, PTL DEF Spec
-======================================       
+======================================
 \* Modification History
 \* Last modified Tue May 14 07:18:15 PDT 2019 by lamport
 \* Created Mon Apr 15 16:25:14 PDT 2019 by lamport

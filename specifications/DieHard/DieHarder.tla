@@ -1,4 +1,4 @@
------------------------------ MODULE DieHarder ------------------------------ 
+----------------------------- MODULE DieHarder ------------------------------
 (***************************************************************************)
 (* We now generalize the problem from Die Hard into one with an arbitrary  *)
 (* number of jugs, each holding some specified amount of water.            *)
@@ -56,8 +56,8 @@ Init == contents = [j \in Jug |-> 0]
 FillJug(j)  == contents' = [contents EXCEPT ![j] = Capacity[j]]
 
 EmptyJug(j) == contents' = [contents EXCEPT ![j] = 0]
-  
-JugToJug(j, k) == 
+
+JugToJug(j, k) ==
   LET amountPoured == Min(contents[j], Capacity[k]-contents[k])
   IN  contents' = [contents EXCEPT ![j] = @ - amountPoured,
                                    ![k] = @ + amountPoured]

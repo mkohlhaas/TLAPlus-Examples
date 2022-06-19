@@ -1,7 +1,7 @@
 --------------------------- MODULE MCAlternatingBit -------------------------
 EXTENDS AlternatingBit
 
-INSTANCE ABCorrectness 
+INSTANCE ABCorrectness
 
 CONSTANTS msgQLen, ackQLen
 

@@ -54,7 +54,7 @@ InitiateProbe ==
 (* since the token will be black. The token will be stained if node i is   *)
 (* black, otherwise its color is unchanged. Node i will be made white.     *)
 (***************************************************************************)
-PassToken(i) == 
+PassToken(i) ==
   /\ tpos = i
   /\ ~ active[i] \/ color[i] = "black" \/ tcolor = "black"
   /\ tpos' = i-1
@@ -150,7 +150,7 @@ AllNodesTerminateIfNoMessages ==
 (***************************************************************************)
 (* Dijkstra's inductive invariant                                          *)
 (***************************************************************************)
-Inv == 
+Inv ==
   \/ P0:: \A i \in Node : tpos < i => ~ active[i]
   \/ P1:: \E j \in 0 .. tpos : color[j] = "black"
   \/ P2:: tcolor = "black"

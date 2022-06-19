@@ -33,8 +33,8 @@ Support(R) == {r[1] : r \in R} \cup {r[2] : r \in R}
 (* of the path (the number of edges) is one greater than the length of the *)
 (* sequence.  We then get the following definition of TC.                  *)
 (***************************************************************************)
-TC(R) == 
-  LET S == Support(R)     
+TC(R) ==
+  LET S == Support(R)
   IN  {<<s, t>> \in S \X S :
         \E p \in Seq(S) : /\ Len(p) > 1
                           /\ p[1] = s
@@ -50,11 +50,11 @@ TC(R) ==
 (* The LET expression defines BoundedSeq(S, n) to be the set of all        *)
 (* sequences in Seq(S) of length at most n.                                *)
 (***************************************************************************)
-TC1(R) == 
+TC1(R) ==
   LET BoundedSeq(S, n) == UNION {[1..i -> S] : i \in 0..n}
-      S == Support(R)     
+      S == Support(R)
   IN  {<<s, t>> \in S \X S :
-                    \E p \in BoundedSeq(S, Cardinality(S)+1) : 
+                    \E p \in BoundedSeq(S, Cardinality(S)+1) :
                             /\ Len(p) > 1
                             /\ p[1] = s
                             /\ p[Len(p)] = t
@@ -69,9 +69,9 @@ TC1(R) ==
 (***************************************************************************)
 R ** T == LET SR == Support(R)
               ST == Support(T)
-          IN  {<<r, t>> \in SR \X ST : 
+          IN  {<<r, t>> \in SR \X ST :
                 \E s \in SR \cap ST : (<<r, s>> \in R) /\ (<<s, t>> \in T)}
-                                         
+
 (***************************************************************************)
 (* We can then define the closure of R to equal                            *)
 (*                                                                         *)
@@ -84,7 +84,7 @@ R ** T == LET SR == Support(R)
 TC2(R) ==
   LET C[n \in Nat] == IF n = 0 THEN R
                                ELSE C[n-1] \cup (C[n-1] ** R)
-  IN  IF R = {} THEN {} ELSE C[Cardinality(Support(R)) - 1] 
+  IN  IF R = {} THEN {} ELSE C[Cardinality(Support(R)) - 1]
 
 (***************************************************************************)
 (* These definitions of TC1 and TC2 are somewhat unsatisfactory because of *)
@@ -114,22 +114,22 @@ TC3(R) == LET RR == R ** R
 TC4(R) ==
   LET S == Support(R)
       RECURSIVE TCR(_)
-      TCR(T) == IF T = {} 
+      TCR(T) == IF T = {}
                   THEN R
                   ELSE LET r == CHOOSE s \in T : TRUE
                            RR == TCR(T \ {r})
-                       IN  RR \cup {<<s, t>> \in S \X S : 
+                       IN  RR \cup {<<s, t>> \in S \X S :
                                       <<s, r>> \in RR /\ <<r, t>> \in RR}
   IN  TCR(S)
-  
+
 (***************************************************************************)
 (* We now test that these four definitions are equivalent.  Since it's     *)
 (* unlikely that all four are wrong in the same way, their equivalence     *)
 (* makes it highly probable that they're correct.                          *)
 (***************************************************************************)
-ASSUME \A N \in 0..3 : 
+ASSUME \A N \in 0..3 :
           \A R \in SUBSET ((1..N) \X (1..N)) : /\ TC1(R) = TC2(R)
-                                               /\ TC2(R) = TC3(R) 
+                                               /\ TC2(R) = TC3(R)
                                                /\ TC3(R) = TC4(R)
 
 (***************************************************************************)
@@ -154,9 +154,9 @@ ASSUME \A N \in 0..3 :
 (* operator R on a set S, R(s, t) equals FALSE for all s and t not in S.)  *)
 (***************************************************************************)
 TC5(R(_,_), S, s, t) ==
-  LET CR[n \in Nat, v \in S] == 
+  LET CR[n \in Nat, v \in S] ==
           IF n = 0 THEN R(s, v)
-                   ELSE \/ CR[n-1, v] 
+                   ELSE \/ CR[n-1, v]
                         \/ \E u \in S : CR[n-1, u] /\ R(u, v)
   IN  /\ s \in S
       /\ t \in S
@@ -169,6 +169,6 @@ TC5(R(_,_), S, s, t) ==
 ASSUME \A N \in 0..3 : \A R \in SUBSET ((1..N) \X (1..N)) :
          LET RR(s, t) == <<s, t>> \in R
              S == Support(R)
-         IN  \A s, t \in S : 
+         IN  \A s, t \in S :
                 TC5(RR, S, s, t) <=> (<<s, t>> \in TC1(R))
 =============================================================================

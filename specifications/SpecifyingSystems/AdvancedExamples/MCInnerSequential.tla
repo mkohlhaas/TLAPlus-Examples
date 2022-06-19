@@ -4,7 +4,7 @@ EXTENDS InnerSequential
 CONSTANT MaxQLen
 Constraint == \A p \in Proc : Len(opQ[p]) \leq MaxQLen
 
-AlwaysResponds == 
+AlwaysResponds ==
   (*************************************************************************)
   (* A simple liveness property, implied by the fact that every request    *)
   (* eventually generates a response.                                      *)

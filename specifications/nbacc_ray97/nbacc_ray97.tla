@@ -1,14 +1,14 @@
 ------------------------------ MODULE nbacc_ray97 ------------------------------
 
-(* TLA+ encoding of the algorithm NBAC with crashes in: 
+(* TLA+ encoding of the algorithm NBAC with crashes in:
 
-   [1] Raynal, Michel. "A case study of agreement problems in distributed 
-   systems: non-blocking atomic commitment." High-Assurance Systems Engineering 
+   [1] Raynal, Michel. "A case study of agreement problems in distributed
+   systems: non-blocking atomic commitment." High-Assurance Systems Engineering
    Workshop, 1997., Proceedings. IEEE, 1997.
- 
+
    Igor Konnov, Thanh Hai Tran, Josef Widder, 2016
-  
-   This file is a subject to the license that is bundled together with this 
+
+   This file is a subject to the license that is bundled together with this
    package and can be found in the file LICENSE.
  *)
 
@@ -19,13 +19,13 @@ CONSTANTS N
 VARIABLES pc,     (* program counters            *)
           rcvd,   (* messages which are received *)
           sent,   (* messages which are sent by  *)
-          fd      (* a failure detector reporting to every process 
+          fd      (* a failure detector reporting to every process
                      whether some process has crashed              *)
 
 ASSUME N \in Nat
 
 Proc == 1 .. N    (* all processess, including the crashed ones   *)
-    
+
 
 M == { "YES", "NO" }
 
@@ -61,10 +61,10 @@ UponNo(self) ==
   /\ pc' = [pc EXCEPT ![self] = "SENT"]
   /\ sent' = sent \cup { <<self, "NO">> }
 
-(* - If process self voted and received a NO messges, it aborts. 
+(* - If process self voted and received a NO messges, it aborts.
    - If process self voted and thinks that some process has crashed,
-     it aborts. 
-   - If process self voted, received only YES messages from all processes, and 
+     it aborts.
+   - If process self voted, received only YES messages from all processes, and
      thinks that all processes are still correct, it commits.
  *)
 UponSent(self) ==
@@ -75,10 +75,10 @@ UponSent(self) ==
             /\ pc' = [pc EXCEPT ![self] = "ABORT"] )
        \/ ( /\ fd'[self] = FALSE
             /\ { p \in Proc : ( \E msg \in rcvd'[self] : msg[1] = p /\ msg[2] = "YES") } = Proc
-            /\ pc' = [pc EXCEPT ![self] = "COMMIT"] ) )   
+            /\ pc' = [pc EXCEPT ![self] = "COMMIT"] ) )
   /\ sent' = sent
-        
-Step(self) ==   
+
+Step(self) ==
   /\ Receive(self)
   /\ UpdateFailureDetector(self)
   /\ \/ UponYes(self)
@@ -88,19 +88,19 @@ Step(self) ==
      \/ pc' = pc /\ sent' = sent    (* Do nothing but we need this to avoid deadlock *)
 
 (* Some processes vote YES. Others vote NO. *)
-Init == 
+Init ==
   /\ sent = {}
   /\ pc \in [ Proc -> {"YES", "NO"} ]
   /\ rcvd = [ i \in Proc |-> {} ]
   /\ fd \in [ Proc -> {FALSE, TRUE} ]
 
 (* All processes vote YES. *)
-InitAllYes == 
+InitAllYes ==
   /\ sent = {}
   /\ pc = [ Proc |-> "YES" ]
   /\ rcvd = [ i \in Proc |-> {} ]
   /\ fd \in [ i \in Proc |-> {TRUE} ]
-      
+
 Next ==  (\E self \in Proc : Step(self))
 
 (* Add the weak fainress condition *)
@@ -111,24 +111,24 @@ Spec == Init /\ [][Next]_vars
                                               \/ UponSent(self))
 
 
-TypeOK == 
+TypeOK ==
   /\ sent \subseteq Proc \times M
   /\ pc \in [ Proc -> {"NO", "YES", "ABORT", "COMMIT", "SENT", "CRASH"} ]
   /\ rcvd \in [ Proc -> SUBSET (Proc \times M) ]
   /\ fd \in [ Proc -> BOOLEAN ]
-          
-Validity == 
+
+Validity ==
   \/ \A i \in Proc : pc[i] = "YES"
   \/ \A i \in Proc : pc[i] # "COMMIT"
- 
+
  (*
-NonTriv ==   
+NonTriv ==
     ( /\ \A i \in Proc : pc[i] = "YES"
       /\ [](\A i \in Proc : pc[i] # "CRASH"
       /\ (<>[](\A self \in Proc : (fd[self] = FALSE)))
   => <>(\A self \in Proc : (pc[self] = "COMMIT"))
   *)
-          
+
 =============================================================================
 \* Modification History
 \* Last modified Mon Jul 09 13:26:03 CEST 2018 by tthai

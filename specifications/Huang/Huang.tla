@@ -6,9 +6,9 @@ CONSTANTS Procs, Leader
 
 ASSUME
     \* The leader is one of the processes.
-    Leader \in Procs    
+    Leader \in Procs
 
-VARIABLES 
+VARIABLES
     active,
     weight,
     msgs
@@ -23,7 +23,7 @@ Sum(fun, set) ==
 
 TypeOK ==
     /\ active \in [ Procs -> BOOLEAN ]
-    /\ \A p \in Procs : 
+    /\ \A p \in Procs :
             \A i \in 1..Len(msgs[p]) :
                 IsDyadicRational(msgs[p][i])
     /\ \A p \in Procs : IsDyadicRational(weight[p])
@@ -44,7 +44,7 @@ Init ==
 SendMsg(p) ==
     /\ active[p]
     \* This spec models a fully meshed network.
-    /\ \E q \in Procs : 
+    /\ \E q \in Procs :
            /\ weight' = [weight EXCEPT ![p] = Half(weight[p])]
            /\ msgs' = [msgs EXCEPT ![q] = Append(@, weight[p]')]
     /\ UNCHANGED <<active>>
@@ -62,7 +62,7 @@ Idle(p) ==
     \* An idle process throws its weight back to leader.
     /\ msgs' = [msgs EXCEPT ![Leader] = Append(@, weight[p])]
     /\ weight' = [weight EXCEPT ![p] = Zero]
- 
+
 ----------------------------------------------------------------------------
 
 IdleLdr ==
@@ -83,7 +83,7 @@ Next ==
     \/ RcvLdr \/ IdleLdr
 
 Spec ==
-        /\ Init 
+        /\ Init
         /\ [][Next]_vars
         /\ WF_vars(RcvLdr)
         /\ WF_vars(IdleLdr)
@@ -96,16 +96,16 @@ TerminationDetected ==
     /\ weight[Leader] = One
 
 Terminated ==
-    \A p \in Procs : 
-        /\ ~active[p] 
+    \A p \in Procs :
+        /\ ~active[p]
         /\ msgs[p] = <<>>
 
-Safe == 
+Safe ==
     [](TerminationDetected => []Terminated)
 
 THEOREM Spec => Safe
-               
-Live == 
+
+Live ==
     Terminated ~> TerminationDetected
 
 THEOREM Spec => Live
@@ -120,9 +120,9 @@ Alias ==
     [
         \* Pretty printing of error-trace states.
         active |-> {p \in Procs : active[p]},
-        weights |-> [p \in { q \in Procs: weight[q] # Zero} 
+        weights |-> [p \in { q \in Procs: weight[q] # Zero}
                         |-> PrettyPrint(weight[p])],
-        msgs |-> [p \in { q \in Procs: msgs[q] # <<>>} 
+        msgs |-> [p \in { q \in Procs: msgs[q] # <<>>}
                         |-> [ i \in 1..Len(msgs[p]) |-> PrettyPrint(msgs[p][i])]]
     ]
 

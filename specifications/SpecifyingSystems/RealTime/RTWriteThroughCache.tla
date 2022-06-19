@@ -17,23 +17,23 @@ RTInit == Init /\ (lastP \in Proc)
 
 position(p) == CHOOSE i \in 1 .. N : p = (lastP + i) % N
 
-canGoNext(p) == 
+canGoNext(p) ==
    \A q \in Proc : (position(q) < position(p))
-            =>  ~ENABLED(RdMiss(q) \/ DoWr(q))     
+            =>  ~ENABLED(RdMiss(q) \/ DoWr(q))
 
 RTRdMiss(p) == /\ canGoNext(p)
-               /\ RdMiss(p) 
-               /\ lastP' = p    
+               /\ RdMiss(p)
+               /\ lastP' = p
 
 RTDoWr(p)   == /\ canGoNext(p)
-               /\ DoWr(p) 
-               /\ lastP' = p    
+               /\ DoWr(p)
+               /\ lastP' = p
 
 RTNext ==
     \/ \E p\in Proc : RTRdMiss(p) \/ RTDoWr(p)
-    \/ /\ \/ \E p\in Proc : \/ Req(p) \/ Rsp(p) \/ DoRd(p) 
+    \/ /\ \/ \E p\in Proc : \/ Req(p) \/ Rsp(p) \/ DoRd(p)
                             \/ \E a \in Adr : Evict(p, a)
-          \/ MemQWr \/ MemQRd    
+          \/ MemQWr \/ MemQRd
        /\ UNCHANGED lastP
 
 vars == <<memInt, wmem, buf, ctl, cache, memQ, lastP>>
@@ -46,6 +46,6 @@ RTSpec == /\ RTInit /\ [][RTNext]_vars
                 /\ RTBound(RTRdMiss(p), vars, 0, Epsilon)
           /\ RTnow(vars)
 -----------------------------------------------------------------------------
-RTM == INSTANCE RTMemory 
+RTM == INSTANCE RTMemory
 THEOREM RTSpec => RTM!Spec
 =============================================================================

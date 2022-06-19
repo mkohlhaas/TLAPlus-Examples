@@ -49,18 +49,18 @@ ASSUME ValAssump == Values \subseteq Int
 (* In TLA+, DOMAIN f is the domain of a function f.                        *)
 (***************************************************************************)
 PermsOf(s) ==
-  LET Automorphisms(S) == { f \in [S -> S] : 
+  LET Automorphisms(S) == { f \in [S -> S] :
                               \A y \in S : \E x \in S : f[x] = y }
       f ** g == [x \in DOMAIN g |-> f[g[x]]]
   IN  { s ** f : f \in Automorphisms(DOMAIN s) }
- 
+
  (**************************************************************************)
  (* We define Max(S) and Min(S) to be the maximum and minimum,             *)
  (* respectively, of a finite, non-empty set S of integers.                *)
  (**************************************************************************)
  Max(S) == CHOOSE x \in S : \A y \in S : x >= y
  Min(S) == CHOOSE x \in S : \A y \in S : x =< y
- 
+
 (***************************************************************************)
 (* The operator Partitions is defined so that if I is an interval that's a *)
 (* subset of 1..Len(s) and p \in Min(I) ..  Max(I)-1, the Partitions(I, p, *)
@@ -72,10 +72,10 @@ PermsOf(s) ==
 (* values for i > p.                                                       *)
 (***************************************************************************)
 Partitions(I, p, s) ==
-  {t \in PermsOf(s) : 
+  {t \in PermsOf(s) :
       /\ \A i \in (1..Len(s)) \ I : t[i] = s[i]
       /\ \A i, j \in I : (i =< p) /\ (p < j) => (t[i] =< t[j])}
-      
+
 (***************************************************************************)
 (* Our algorithm has three variables:                                      *)
 (*                                                                         *)
@@ -104,15 +104,15 @@ Partitions(I, p, s) ==
 (*                                                                         *)
 (* It stops when U is empty.  Below is the algorithm written in PlusCal.   *)
 (***************************************************************************)
- 
+
 (***************************************************************************
 --fair algorithm Quicksort {
   variables  seq \in Seq(Values) \ {<< >>}, seq0 = seq,  U = {1..Len(seq)};
-  { a: while (U # {}) 
-        { with (I \in U) 
-            { if (Cardinality(I) = 1) 
-                { U := U \ {I} } 
-              else 
+  { a: while (U # {})
+        { with (I \in U)
+            { if (Cardinality(I) = 1)
+                { U := U \ {I} }
+              else
                 { with (p \in Min(I) .. (Max(I)-1),
                         I1 = Min(I)..p,
                         I2 = (p+1)..Max(I),
@@ -170,9 +170,9 @@ Termination == <>(pc = "Done")
 (* at most 4.  A little thought shows that it then suffices to let Values  *)
 (* be a set of 4 integers.                                                 *)
 (***************************************************************************)
-PCorrect == (pc = "Done") => 
+PCorrect == (pc = "Done") =>
                /\ seq \in PermsOf(seq0)
-               /\ \A p, q \in 1..Len(seq) : p < q => seq[p] =< seq[q] 
+               /\ \A p, q \in 1..Len(seq) : p < q => seq[p] =< seq[q]
 
 (***************************************************************************)
 (* Below are some definitions leading up to the definition of the          *)
@@ -190,12 +190,12 @@ DomainPartitions == {DP \in SUBSET SUBSET (1..Len(seq0)) :
                       /\ \A I, J \in DP : (I # J) => (I \cap J = {}) }
 
 RelSorted(I, J) == \A i \in I, j \in J : (i < j) => (seq[i] =< seq[j])
- 
+
 TypeOK == /\ seq \in Seq(Values) \ {<<>>}
           /\ seq0 \in Seq(Values) \ {<<>>}
           /\ U \in SUBSET ( (SUBSET (1..Len(seq0))) \ {{}} )
           /\ pc \in {"a", "Done"}
-          
+
 Inv == /\ TypeOK
        /\ (pc = "Done") => (U = {})
        /\ UV \in DomainPartitions
@@ -209,7 +209,7 @@ THEOREM Spec => []PCorrect
                PROVE  Inv
     OBVIOUS
   <2>1. TypeOK
-    <3>1. seq \in Seq(Values) \ {<<>>} 
+    <3>1. seq \in Seq(Values) \ {<<>>}
       BY DEF Init, Inv, TypeOK, DomainPartitions, RelSorted, UV
     <3>2. seq0 \in Seq(Values) \ {<<>>}
       BY DEF Init, Inv, TypeOK, DomainPartitions, RelSorted, UV
@@ -223,7 +223,7 @@ THEOREM Spec => []PCorrect
     <3>4. pc \in {"a", "Done"}
       BY DEF Init, Inv, TypeOK, DomainPartitions, RelSorted, UV
     <3>5. QED
-      BY <3>1, <3>2, <3>3, <3>4 DEF TypeOK   
+      BY <3>1, <3>2, <3>3, <3>4 DEF TypeOK
   <2>2. pc = "Done" => U = {}
     BY DEF Init
   <2>3. UV \in DomainPartitions
@@ -289,37 +289,37 @@ THEOREM Spec => []PCorrect
             (* keeping it in UV.                                           *)
             (***************************************************************)
           <6>2. TypeOK'
-            BY <4>1, <4>3, <5>1 
+            BY <4>1, <4>3, <5>1
             DEF Inv, TypeOK, DomainPartitions, PermsOf, RelSorted, Min, Max, UV
           <6>3. ((pc = "Done") => (U = {}))'
-            BY <4>1, <4>3, <5>1 
+            BY <4>1, <4>3, <5>1
             DEF Inv, TypeOK, DomainPartitions, PermsOf, RelSorted, Min, Max, UV
           <6>4. (UV \in DomainPartitions)'
             BY <4>1, <4>3, <5>1, <6>1
-            DEF Inv, TypeOK, DomainPartitions 
+            DEF Inv, TypeOK, DomainPartitions
           <6>5. (seq \in PermsOf(seq0))'
-            BY <4>1, <4>3, <5>1 
-            DEF Inv, TypeOK,  PermsOf 
+            BY <4>1, <4>3, <5>1
+            DEF Inv, TypeOK,  PermsOf
           <6>6. (UNION UV = 1..Len(seq0))'
-            BY  <5>1, <6>1 DEF Inv 
+            BY  <5>1, <6>1 DEF Inv
           <6>7. (\A I_1, J \in UV : (I_1 # J) => RelSorted(I_1, J))'
             BY <4>1, <4>3, <5>1, <6>1
-            DEF Inv, TypeOK, RelSorted 
+            DEF Inv, TypeOK, RelSorted
           <6>8. QED
-            BY <6>2, <6>3, <6>4, <6>5, <6>6, <6>7 DEF Inv          
-      <4>4. CASE Cardinality(I) # 1 
+            BY <6>2, <6>3, <6>4, <6>5, <6>6, <6>7 DEF Inv
+      <4>4. CASE Cardinality(I) # 1
         <5>1. seq0' = seq0
           BY DEF a
-        <5> DEFINE I1(p) == Min(I)..p 
+        <5> DEFINE I1(p) == Min(I)..p
                    I2(p) == (p+1)..Max(I)
-        <5>2. PICK p \in Min(I) .. (Max(I)-1) : 
+        <5>2. PICK p \in Min(I) .. (Max(I)-1) :
                     /\ seq' \in Partitions(I, p, seq)
                     /\ U' = ((U \ {I}) \cup {I1(p), I2(p)})
           BY <4>2, <4>4
-        <5>3. /\ /\ I1(p) # {} 
+        <5>3. /\ /\ I1(p) # {}
                  /\ I1(p) = Min(I1(p)).. Max(I1(p))
                  /\ I1(p) \subseteq 1..Len(seq0)
-              /\ /\ I2(p) # {} 
+              /\ /\ I2(p) # {}
                  /\ I2(p) = Min(I2(p)).. Max(I2(p))
                  /\ I2(p) \subseteq 1..Len(seq0)
               /\ I1(p) \cap I2(p) = {}
@@ -333,7 +333,7 @@ THEOREM Spec => []PCorrect
           (* definitions of I1(p) and I2(p) that they are disjoint sets    *)
           (* whose union is I.  The final conjunct follows from the        *)
           (* definition of Partitions(I, p, seq).                          *)
-          (*****************************************************************) 
+          (*****************************************************************)
         <5>4. /\ Len(seq) = Len(seq')
               /\ Len(seq) = Len(seq0)
           (*****************************************************************)
@@ -349,7 +349,7 @@ THEOREM Spec => []PCorrect
           (*****************************************************************)
           (* By <5>2, <5>3, and definition of UV, since Len(seq) =         *)
           (* Len(seq').                                                    *)
-          (*****************************************************************)        
+          (*****************************************************************)
         <5>7. TypeOK'
           <6>1. (seq \in Seq(Values) \ {<<>>})'
             (***************************************************************)
@@ -375,7 +375,7 @@ THEOREM Spec => []PCorrect
             BY <5>6, <5>3, <5>4, <5>1  DEF Inv
           <6>2. UNION UV' = 1..Len(seq0')
             BY <5>6, <5>3, <5>4, <5>1  DEF Inv
-          <6>3. ASSUME NEW J \in UV' 
+          <6>3. ASSUME NEW J \in UV'
                 PROVE  J = Min(J)..Max(J)
             <7>1. CASE J \in UV
               BY <7>1 DEF Inv, DomainPartitions
@@ -385,7 +385,7 @@ THEOREM Spec => []PCorrect
               BY <7>3, <5>3
             <7>4. QED
               BY <7>1, <7>2, <7>3, <5>6
-          <6>4. ASSUME NEW J \in UV', NEW K \in UV', J # K 
+          <6>4. ASSUME NEW J \in UV', NEW K \in UV', J # K
                 PROVE  J \cap K = {}
             (***************************************************************)
             (* If J and K are in UV, then this follows from Inv.  If one   *)
@@ -427,7 +427,7 @@ THEOREM Spec => []PCorrect
         <5>13. QED
           BY <5>7, <5>8, <5>9, <5>10, <5>11, <5>12 DEF Inv
       <4>5. QED
-        BY <4>3, <4>4      
+        BY <4>3, <4>4
     <3>2. CASE U = {}
       <4> USE <3>2 DEF a, Inv, TypeOK, DomainPartitions, PermsOf, RelSorted, Min, Max, UV
       <4>1. TypeOK'
@@ -460,7 +460,7 @@ THEOREM Spec => []PCorrect
     <3>6. (\A I, J \in UV : (I # J) => RelSorted(I, J))'
       BY <2>2 DEF vars, Inv, TypeOK, DomainPartitions, PermsOf, RelSorted, Min, Max, UV
     <3>7. QED
-      BY <3>1, <3>2, <3>3, <3>4, <3>5, <3>6 DEF Inv    
+      BY <3>1, <3>2, <3>3, <3>4, <3>5, <3>6 DEF Inv
   <2>3. QED
     BY <2>1, <2>2 DEF Next
 <1>3. Inv => PCorrect

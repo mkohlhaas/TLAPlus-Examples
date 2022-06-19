@@ -6,7 +6,7 @@ LOCAL INSTANCE Sequences
 LOCAL INSTANCE FiniteSetsExt
 LOCAL INSTANCE TLC
 
-LOCAL Divides(p, q) == 
+LOCAL Divides(p, q) ==
     \E d \in 1..q : q = p * d
 
 LOCAL Divisors(q) ==
@@ -26,7 +26,7 @@ LOCAL Reduce(p) ==
         ELSE Rational(p.num \div gcd, p.dem \div gcd)
 
 IsDyadicRational(r) ==
-    \E i \in 0..r.dem: 2^i = r.dem 
+    \E i \in 0..r.dem: 2^i = r.dem
 
 Zero == Rational(0,1)
 

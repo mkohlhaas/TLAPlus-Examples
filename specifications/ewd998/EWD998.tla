@@ -14,13 +14,13 @@ Node == 0 .. N-1
 Color == {"white", "black"}
 Token == [pos : Node, q : Int, color : Color]
 
-VARIABLES 
+VARIABLES
  active,     \* activation status of nodes
  color,      \* color of nodes
  counter,    \* nb of sent messages - nb of rcvd messages per node
  pending,    \* nb of messages in transit to node
  token       \* token structure
-  
+
 vars == <<active, color, counter, pending, token>>
 
 TypeOK ==
@@ -30,9 +30,9 @@ TypeOK ==
   /\ pending \in [Node -> Nat]
   /\ token \in Token
 ------------------------------------------------------------------------------
- 
+
 Init ==
-  (* EWD840 but nodes *) 
+  (* EWD840 but nodes *)
   /\ active \in [Node -> BOOLEAN]
   /\ color \in [Node -> Color]
   (* Rule 0 *)
@@ -50,8 +50,8 @@ InitiateProbe ==
   /\ token' = [pos |-> N-1, q |-> 0, color |-> "white"]
   /\ color' = [ color EXCEPT ![0] = "white" ]
   \* The state of the nodes remains unchanged by token-related actions.
-  /\ UNCHANGED <<active, counter, pending>>                            
-  
+  /\ UNCHANGED <<active, counter, pending>>
+
 PassToken(i) ==
   (* Rules 2 + 4 + 7 *)
   /\ ~ active[i] \* If machine i is active, keep the token.
@@ -88,7 +88,7 @@ RecvMsg(i) ==
   /\ color' = [ color EXCEPT ![i] = "black" ]
   \* Receipt of a message activates i.
   /\ active' = [ active EXCEPT ![i] = TRUE ]
-  /\ UNCHANGED <<token>>                           
+  /\ UNCHANGED <<token>>
 
 Deactivate(i) ==
   /\ active[i]
@@ -136,7 +136,7 @@ B == FoldFunction(+, 0, pending)
 (* The system has terminated if no node is active and there are no         *)
 (* in-flight messages.                                                     *)
 (***************************************************************************)
-Termination == 
+Termination ==
   /\ \A i \in Node : ~ active[i]
   /\ B = 0
 
@@ -146,13 +146,13 @@ TerminationDetection ==
 (***************************************************************************)
 (* Safra's inductive invariant                                             *)
 (***************************************************************************)
-Inv == 
+Inv ==
   /\ P0:: B = FoldFunction(+, 0, counter)
      (* (Ai: t < i < N: machine nr.i is passive) /\ *)
      (* (Si: t < i < N: ci.i) = q *)
   /\ \/ P1:: /\ \A i \in (token.pos+1)..N-1: ~ active[i] \* machine nr.i is passive
-             /\ IF token.pos = N-1 
-                THEN token.q = 0 
+             /\ IF token.pos = N-1
+                THEN token.q = 0
                 ELSE token.q = FoldFunctionOnSet(+, 0, counter, (token.pos+1..N-1))
      (* (Si: 0 <= i <= t: c.i) + q > 0. *)
      \/ P2:: FoldFunctionOnSet(+, 0, counter, 0..token.pos) + token.q > 0

@@ -1,4 +1,4 @@
------------------------------ MODULE SimpleMath ----------------------------- 
+----------------------------- MODULE SimpleMath -----------------------------
 
 (***************************************************************************)
 (* This is a TLA+ module that asserts some simple mathematical formulas    *)
@@ -47,7 +47,7 @@ CONSTANTS a, b, c, d, e, f, g
 (***************************************************************************)
 ASSUME
   \A F, G \in {TRUE, FALSE} : (F => G) <=> ~F \/ G
-  
+
 
 (***************************************************************************)
 (* Here is an example showing how you can check that a formula is NOT a    *)
@@ -66,7 +66,7 @@ ASSUME
 ASSUME
   {1, 2} \cup {2, 3, 4} = {5, 4, 3, 2, 1} \cap {1, 2, 3, 4}
 
-ASSUME 
+ASSUME
   {1, 3} \subseteq {3, 2, 1}
 
 ASSUME

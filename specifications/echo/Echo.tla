@@ -7,17 +7,17 @@ EXTENDS Naturals, FiniteSets, Relation, TLC
 
 CONSTANTS Node,      \* set of nodes
           initiator, \* single initiator, will be the root of the tree
-          R          \* neighborhood relation, represented as a Boolean function over nodes 
+          R          \* neighborhood relation, represented as a Boolean function over nodes
 
 ASSUME /\ initiator \in Node
        /\ R \in [Node \X Node -> BOOLEAN]
        \* No edge from a node to itself (self-loops).
        /\ IsIrreflexive(R, Node)
-       \* Undirected graph (there exists an edge from b 
+       \* Undirected graph (there exists an edge from b
        \* to a if there exists an edge from a to b).
        /\ IsSymmetric(R, Node)
        \* There exists a spanning tree consisting of *all* nodes.
-       \* (no forest of spanning trees). 
+       \* (no forest of spanning trees).
        /\ IsConnected(R, Node)
 
 NoNode == CHOOSE x : x \notin Node
@@ -37,7 +37,7 @@ neighbors(n) == { m \in Node : R[m,n] }
                         ELSE net[m]]
     }
 
-  process (node \in Node) 
+  process (node \in Node)
     variables parent = NoNode,
               children = {},
               rcvd = 0,
@@ -114,7 +114,7 @@ n1(self) == /\ pc[self] = "n1"
                             LET net == receive(inbox, self, msg) IN
                               /\ rcvd' = [rcvd EXCEPT ![self] = rcvd[self]+1]
                               /\ IF self # initiator /\ rcvd'[self] = 1
-                                    THEN /\ Assert((msg.kind = "m"), 
+                                    THEN /\ Assert((msg.kind = "m"),
                                                    "Failure of assertion at line 50, column 16.")
                                          /\ parent' = [parent EXCEPT ![self] = msg.sndr]
                                          /\ inbox' = multicast(net, self, nbrs[self] \ {msg.sndr}, "m")
@@ -131,7 +131,7 @@ n1(self) == /\ pc[self] = "n1"
 
 n2(self) == /\ pc[self] = "n2"
             /\ IF self # initiator
-                  THEN /\ Assert((parent[self] \in nbrs[self]), 
+                  THEN /\ Assert((parent[self] \in nbrs[self]),
                                  "Failure of assertion at line 65, column 10.")
                        /\ inbox' = send(inbox, self, parent[self], "c")
                   ELSE /\ TRUE

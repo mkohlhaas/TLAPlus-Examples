@@ -27,34 +27,34 @@ N == Cardinality(Node)
 \* Choose a node to be the initiator of a fresh token. We don't care which one it
 \* is as long as it is always the same.
 Initiator == CHOOSE n \in Node : TRUE
-                                         
-\* Organize Nodes in a ring. 
-RingOfNodes == 
+
+\* Organize Nodes in a ring.
+RingOfNodes ==
   CHOOSE r \in [ Node -> Node ]: IsSimpleCycle(Node, r)
 
 Color == {"white", "black"}
 
-VARIABLES 
+VARIABLES
  active,
  color,
  counter,
  inbox,
  clock
-  
+
 vars == <<active, color, counter, inbox, clock>>
 
 \* The (vector) clock is not relevant for the correctness of the algorithm.
 View == <<active, color, counter, inbox>>
 
 ------------------------------------------------------------------------------
- 
+
 Init ==
   (* Rule 0 *)
   /\ counter = [n \in Node |-> 0] \* c properly initialized
-  /\ inbox = [n \in Node |-> IF n = Initiator 
-                              THEN << [type |-> "tok", q |-> 0, color |-> "black" ] >> 
+  /\ inbox = [n \in Node |-> IF n = Initiator
+                              THEN << [type |-> "tok", q |-> 0, color |-> "black" ] >>
                               ELSE <<>>] \* with empty channels.
-  (* EWD840 *) 
+  (* EWD840 *)
   /\ active \in [Node -> BOOLEAN]
   /\ color \in [Node -> Color]
   (* Each node maintains a (local) vector clock *)
@@ -70,32 +70,32 @@ InitiateProbe(n) ==
       /\ \* Previous round inconsistent, if:
          \/ inbox[Initiator][j].color = "black"
          \/ color[Initiator] = "black"
-         \* Implicit stated in EWD998 as c0 + q > 0 means that termination has not 
+         \* Implicit stated in EWD998 as c0 + q > 0 means that termination has not
          \* been achieved: Initiate a probe if the token's color is white but the
          \* number of in-flight messages is not zero.
          \/ counter[Initiator] + inbox[Initiator][j].q # 0
-      /\ inbox' = [inbox EXCEPT ![RingOfNodes[Initiator]] = Append(@, 
+      /\ inbox' = [inbox EXCEPT ![RingOfNodes[Initiator]] = Append(@,
            [type |-> "tok", q |-> 0,
              (* Rule 6 *)
-             color |-> "white"]), 
-             ![Initiator] = RemoveAt(@, j) ] \* consume token message from inbox[0]. 
+             color |-> "white"]),
+             ![Initiator] = RemoveAt(@, j) ] \* consume token message from inbox[0].
   (* Rule 6 *)
   /\ color' = [ color EXCEPT ![Initiator] = "white" ]
   \* TODO: Do we attach i's vector clock along with the token?  For now, token-
    \* TODO: related actions are treated as internal events.
   /\ clock' = [ clock EXCEPT ![Initiator][Initiator] = @ + 1 ]
   \* The state of the nodes remains unchanged by token-related actions.
-  /\ UNCHANGED <<active, counter>>                            
-  
+  /\ UNCHANGED <<active, counter>>
+
 PassToken(n) ==
   /\ n # Initiator
   (* Rule 2 *)
   /\ ~ active[n] \* If machine i is active, keep the token.
-  /\ \E j \in 1..Len(inbox[n]) : 
+  /\ \E j \in 1..Len(inbox[n]) :
           /\ inbox[n][j].type = "tok"
           \* the machine nr.i+1 transmits the token to machine nr.i under q := q + c[i+1]
           /\ LET tkn == inbox[n][j]
-             IN  inbox' = [inbox EXCEPT ![RingOfNodes[n]] = 
+             IN  inbox' = [inbox EXCEPT ![RingOfNodes[n]] =
                                        Append(@, [tkn EXCEPT !.q = tkn.q + counter[n],
                                                              !.color = IF color[n] = "black"
                                                                        THEN "black"
@@ -106,11 +106,11 @@ PassToken(n) ==
   \* Just increment the node's local clock on token messages.
   /\ clock' = [ clock EXCEPT ![n][n] = @ + 1 ]
   \* The state of the nodes remains unchanged by token-related actions.
-  /\ UNCHANGED <<active, counter>>                            
+  /\ UNCHANGED <<active, counter>>
 
 System(n) == \/ InitiateProbe(n)
              \/ PassToken(n)
- 
+
 -----------------------------------------------------------------------------
 
 SendMsg(n) ==
@@ -125,9 +125,9 @@ SendMsg(n) ==
           /\ inbox' = [inbox EXCEPT ![j] = Append(@, [type |-> "pl", src |-> n, vc |-> clock[n]' ] ) ]
           \* Note that we don't blacken node i as in EWD840 if node i
           \* sends a message to node j with j > i
-  /\ UNCHANGED <<active, color>>                            
+  /\ UNCHANGED <<active, color>>
 
-\* RecvMsg could write the incoming message to a (Java) buffer from which the (Java) implementation consumes it. 
+\* RecvMsg could write the incoming message to a (Java) buffer from which the (Java) implementation consumes it.
 RecvMsg(n) ==
   (* Rule 0 *)
   /\ counter' = [counter EXCEPT ![n] = @ - 1]
@@ -136,14 +136,14 @@ RecvMsg(n) ==
   \* Receipt of a message activates node n.
   /\ active' = [ active EXCEPT ![n] = TRUE ]
   \* Consume a message (not the token!).
-  /\ \E j \in 1..Len(inbox[n]) : 
+  /\ \E j \in 1..Len(inbox[n]) :
           /\ inbox[n][j].type = "pl"
           /\ inbox' = [inbox EXCEPT ![n] = RemoveAt(@, j) ]
           \* This is where the "magic" of the vector clock happens.
           /\ LET Max(a,b) == IF a < b THEN b ELSE a
                  Merge(r, l) == [ m \in Node |-> IF m = n THEN l[m] + 1 ELSE Max(r[m], l[m]) ]
              IN clock' = [ clock EXCEPT ![n] = Merge(inbox[n][j].vc, @) ]
-  /\ UNCHANGED <<>>                           
+  /\ UNCHANGED <<>>
 
 Deactivate(n) ==
   /\ active[n]
@@ -151,7 +151,7 @@ Deactivate(n) ==
   /\ clock' = [ clock EXCEPT ![n][n] = @ + 1 ]
   /\ UNCHANGED <<color, inbox, counter>>
 
-Environment(n) == 
+Environment(n) ==
   \/ SendMsg(n)
   \/ RecvMsg(n)
   \/ Deactivate(n)
@@ -169,8 +169,8 @@ Spec == Init /\ [][\E n \in Node: Next(n)]_vars
 \* The definitions of the refinement mapping below this line will be
 \* ignored by PlusPy.  It can thus make use of RECURSIVE.
 \*++:Spec
-  
-nat2node[i \in 0..N-1 ] == 
+
+nat2node[i \in 0..N-1 ] ==
   LET RECURSIVE Op(_,_,_)
       Op(p, cnt, nd) ==
          IF p = cnt THEN nd
@@ -199,11 +199,11 @@ EWD998Chan == INSTANCE EWD998Chan WITH active <- Node2Nat(active),
                                             \* Drop the src from the payload
                                             \* message.
                                             [n \in DOMAIN inbox |->
-                                                MapSeq(inbox[n], 
-                                                LAMBDA m: 
-                                                IF m.type = "pl" 
-                                                THEN [type |-> "pl"] 
-                                                ELSE m) 
+                                                MapSeq(inbox[n],
+                                                LAMBDA m:
+                                                IF m.type = "pl"
+                                                THEN [type |-> "pl"]
+                                                ELSE m)
                                             ])
 
 EWD998ChanStateConstraint == EWD998Chan!StateConstraint

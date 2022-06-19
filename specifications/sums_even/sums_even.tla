@@ -1,5 +1,5 @@
 ------------------------- MODULE sums_even -------------------------
-\* A proof that the sum x+x of the natural number x is always even.  
+\* A proof that the sum x+x of the natural number x is always even.
 
 EXTENDS Naturals, TLAPS
 

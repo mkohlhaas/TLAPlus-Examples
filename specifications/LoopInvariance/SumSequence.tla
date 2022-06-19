@@ -37,7 +37,7 @@ ASSUME  ValAssump == Values \subseteq Int
 (* it does handle recursive function definitions.  So, we define SeqSum in *)
 (* terms of a recursively defined function.                                *)
 (***************************************************************************)
-SeqSum(s) == 
+SeqSum(s) ==
   LET SS[ss \in Seq(Int)] == IF ss = << >> THEN 0 ELSE ss[1] + SS[Tail(ss)]
   IN  SS[s]
 
@@ -48,7 +48,7 @@ with the variable sum equal to the sum of the elements of seq.
 
 --fair algorithm SumSequence {
     variables seq \in Seq(Values), sum = 0, n = 1 ;
-    { a: while (n =< Len(seq)) 
+    { a: while (n =< Len(seq))
           { sum := sum + seq[n] ;
              n := n+1 ;           }
     }
@@ -120,11 +120,11 @@ TypeOK == /\ seq \in Seq(Values)
           /\ sum \in Int
           /\ n \in 1..(Len(seq)+1)
           /\ pc \in {"a", "Done"}
-          
+
 Inv == /\ TypeOK
        /\ sum = SeqSum([i \in 1..(n-1) |-> seq[i]])
-       /\ (pc = "Done") => (n = Len(seq) + 1) 
-       
+       /\ (pc = "Done") => (n = Len(seq) + 1)
+
 (***************************************************************************)
 (* TLC can check that Inv is an inductive invariant on a large enough      *)
 (* model to give us confidence in its correctness.  We can therefore try   *)
@@ -150,7 +150,7 @@ Inv == /\ TypeOK
 (* SeqSum(<<1, 2, 3, 4>>) equals 1 + SeqSum(<<2, 3, 4>>).                  *)
 (***************************************************************************)
 LEMMA Lemma1 ==
-        \A s \in Seq(Int) : 
+        \A s \in Seq(Int) :
           SeqSum(s) = IF s = << >> THEN 0 ELSE s[1] + SeqSum(Tail(s))
 
 (***************************************************************************)
@@ -175,8 +175,8 @@ BY DEF Front, SubSeq
 
 
 
-LEMMA Lemma5  ==  \A s \in Seq(Int) : 
-                    (Len(s) > 0) => 
+LEMMA Lemma5  ==  \A s \in Seq(Int) :
+                    (Len(s) > 0) =>
                        (SeqSum(s) =  SeqSum(Front(s)) + s[Len(s)])
 
 (***************************************************************************)
@@ -200,7 +200,7 @@ THEOREM Spec => []PCorrect
     <3>1. (n-1) = 0
       BY DEF Init
     <3>2. [i \in 1..0 |-> seq[i]] = << >>
-      OBVIOUS 
+      OBVIOUS
     <3>3. << >> \in Seq(Int)
       OBVIOUS
     <3>4. QED
@@ -208,7 +208,7 @@ THEOREM Spec => []PCorrect
   <2>3. (pc = "Done") => (n = Len(seq) + 1)
     BY Lemma1, ValAssump DEF Init, Inv, TypeOK
   <2>4. QED
-    BY <2>1, <2>2, <2>3 DEF Inv  
+    BY <2>1, <2>2, <2>3 DEF Inv
 <1>2. Inv /\ [Next]_vars => Inv'
   <2> SUFFICES ASSUME Inv,
                       [Next]_vars
@@ -230,11 +230,11 @@ THEOREM Spec => []PCorrect
           OBVIOUS
         <5>1. /\ n'-1 = n
               /\ Len(s) = n
-              /\ s[Len(s)] = seq[n] 
+              /\ s[Len(s)] = seq[n]
           BY <2>1, <4>2 DEF a, Inv, TypeOK
         <5>2. s = [i \in 1..n |-> seq[i]]
           BY <5>1, <2>1 DEF a
-        <5>3. sum' =  sum + seq[n] 
+        <5>3. sum' =  sum + seq[n]
           BY <2>1, <4>2 DEF a
         <5> HIDE DEF s
         <5>4. SeqSum(s) = SeqSum([i \in 1..(Len(s)-1) |-> s[i]]) + s[Len(s)]
@@ -249,11 +249,11 @@ THEOREM Spec => []PCorrect
           <6> QED
             BY <6>4,  <5>1, <4>2, Lemma5 DEF Front
         <5>5. curseq = [i \in 1..(Len(s)-1) |-> s[i]]
-          BY <5>1, <5>2             
-        <5>6. sum = SeqSum(curseq)                                 
+          BY <5>1, <5>2
+        <5>6. sum = SeqSum(curseq)
           BY <2>1, <4>2, <5>5  DEF Inv, TypeOK, s
-        <5>7. QED 
-          BY <5>1, <5>3, <5>4, <5>5, <5>6 DEF Inv, TypeOK, s 
+        <5>7. QED
+          BY <5>1, <5>3, <5>4, <5>5, <5>6 DEF Inv, TypeOK, s
       <4>3. QED
         BY <4>1, <4>2 DEF Inv, TypeOK
     <3>3. ((pc = "Done") => (n = Len(seq) + 1))'
@@ -272,7 +272,7 @@ THEOREM Spec => []PCorrect
   <2>1. seq = [i \in 1..Len(seq) |-> seq[i]]
     BY DEF Inv, TypeOK
   <2>2. QED
-    BY <2>1 DEF Inv, TypeOK  
+    BY <2>1 DEF Inv, TypeOK
 <1>4. QED
   BY <1>1, <1>2, <1>3, PTL DEF Spec
 -----------------------------------------------------------------------------
@@ -287,27 +287,27 @@ THEOREM Spec => []PCorrect
 (* of such a definition.                                                   *)
 (***************************************************************************)
 LEMMA Lemma1_Proof ==
-         \A s \in Seq(Int) : 
+         \A s \in Seq(Int) :
           SeqSum(s) = IF s = << >> THEN 0 ELSE s[1] + SeqSum(Tail(s))
 <1> DEFINE DefSS(ssOfTailss, ss) == ss[1] + ssOfTailss
-           SS[ss \in Seq(Int)] == 
-              IF ss = << >> THEN 0 ELSE DefSS(SS[Tail(ss)], ss)         
+           SS[ss \in Seq(Int)] ==
+              IF ss = << >> THEN 0 ELSE DefSS(SS[Tail(ss)], ss)
 <1>1. TailInductiveDefHypothesis(SS, Int, 0, DefSS)
   BY DEF TailInductiveDefHypothesis
-<1>2. TailInductiveDefConclusion(SS, Int, 0, DefSS) 
+<1>2. TailInductiveDefConclusion(SS, Int, 0, DefSS)
   BY <1>1, TailInductiveDef
-<1>3. SS = [ss \in Seq(Int) |-> IF ss = << >> THEN 0 
+<1>3. SS = [ss \in Seq(Int) |-> IF ss = << >> THEN 0
                                               ELSE ss[1] +  SS[Tail(ss)]]
   BY <1>2 DEF TailInductiveDefConclusion
-<1> QED 
+<1> QED
   BY <1>3 DEF SeqSum
 
- 
+
 (***************************************************************************)
 (* Lemmas 2 and 3 are simple properties of Tail and Front that are used in *)
 (* the proof of Lemma 5.                                                   *)
 (***************************************************************************)
-LEMMA Lemma2 == 
+LEMMA Lemma2 ==
        \A S : \A s \in Seq(S) :
           Len(s) > 0 => /\ Tail(s) \in Seq(S)
                         /\ Front(s) \in Seq(S)
@@ -327,8 +327,8 @@ LEMMA Lemma2 ==
     BY FrontDef
   <1>3. QED
     BY <1>1, <1>2
-                   
-                   
+
+
 LEMMA Lemma3 ==
   \A S : \A s \in Seq(S) :
             (Len(s) > 1) => (Tail(Front(s)) = Front(Tail(s)))
@@ -416,16 +416,16 @@ LEMMA Lemma4 == \A s \in Seq(Int) : SeqSum(s) \in Int
 <1>4. QED
   BY <1>3 DEF P
 
-  
+
 LEMMA Lemma5_Proof ==
-        \A s \in Seq(Int) : 
-          (Len(s) > 0) => 
+        \A s \in Seq(Int) :
+          (Len(s) > 0) =>
             SeqSum(s) =  SeqSum(Front(s)) + s[Len(s)]
-<1> DEFINE P(N) == \A s \in Seq(Int) : 
-                     (Len(s) = N) =>  
+<1> DEFINE P(N) == \A s \in Seq(Int) :
+                     (Len(s) = N) =>
                         (SeqSum(s) = IF Len(s) = 0
                                       THEN 0
-                                      ELSE SeqSum(Front(s)) + s[Len(s)]) 
+                                      ELSE SeqSum(Front(s)) + s[Len(s)])
 <1>1. P(0)
   <2> SUFFICES ASSUME NEW s \in Seq(Int),
                       Len(s) = 0
@@ -434,7 +434,7 @@ LEMMA Lemma5_Proof ==
                                    ELSE SeqSum(Front(s)) + s[Len(s)]
     BY DEF P
   <2> QED
-    BY s = << >>,  Lemma1  
+    BY s = << >>,  Lemma1
 <1>2. ASSUME NEW N \in Nat, P(N)
       PROVE  P(N+1)
   <2> SUFFICES ASSUME NEW s \in Seq(Int),
@@ -449,11 +449,11 @@ LEMMA Lemma5_Proof ==
         /\ Len(Front(s)) = N
     BY Lemma2
   <2> DEFINE t == Tail(s)
-  <2> USE FrontDef 
-  <2>2. /\ t \in Seq(Int) 
+  <2> USE FrontDef
+  <2>2. /\ t \in Seq(Int)
         /\ Len(t) = N
         /\ SeqSum(s) = s[1] + SeqSum(t)
-      BY HeadTailProperties, Lemma1, s # << >>             
+      BY HeadTailProperties, Lemma1, s # << >>
   <2>3. CASE N = 0
     <3> USE <2>3
     <3> HIDE FrontDef \* DEF Front
@@ -461,7 +461,7 @@ LEMMA Lemma5_Proof ==
       BY Lemma1, <2>1, Front(s) = << >>
     <3>2. Len(Tail(s)) = 0
       BY HeadTailProperties
-    <3>3. SeqSum(Tail(s)) = 
+    <3>3. SeqSum(Tail(s)) =
            IF Tail(s) = << >> THEN 0 ELSE Tail(s)[1] + SeqSum(Tail(Tail(s)))
       BY <2>2, Lemma1
     <3>4. SeqSum(Tail(s)) = 0
@@ -488,11 +488,11 @@ LEMMA Lemma5_Proof ==
         <5> QED
           BY Lemma2
       <4>4. QED
-        BY <4>1, <4>2, <4>3    
+        BY <4>1, <4>2, <4>3
     <3>1. SeqSum(t) = SeqSum(Front(t)) +  t[N]
       BY <1>2, <2>2, <2>4
     <3>2. SeqSum(t) = SeqSum(Tail(Front(s))) + t[N]
-      BY <3>1, <2>4, Len(s) > 1, Lemma3 
+      BY <3>1, <2>4, Len(s) > 1, Lemma3
     <3>3. t[N] = s[N+1]
       BY <2>2, <2>4
     <3> HIDE DEF Front
@@ -513,7 +513,7 @@ LEMMA Lemma5_Proof ==
         <5>3. Front(s) # << >>
            BY <5>2
          <5>4. Tail(Front(s)) \in Seq(Int)
-           BY <5>3 
+           BY <5>3
          <5>5. QED
         BY <2>4, <2>2, <2>1, <5>3, Lemma4
       <4>4. t[N] \in Int
@@ -521,7 +521,7 @@ LEMMA Lemma5_Proof ==
       <4>4a. s[1] \in Int
          BY <2>4
       <4>5. QED
-        BY <4>1, <4>2, <4>3, <4>4   
+        BY <4>1, <4>2, <4>3, <4>4
     <3>5. SeqSum(s) = s[1] + SeqSum(Tail(Front(s))) + t[N]
       <4>1. SeqSum(s) = s[1] + SeqSum(t)
         BY <2>2
@@ -534,7 +534,7 @@ LEMMA Lemma5_Proof ==
     <3>8. SeqSum(Front(s)) = Front(s)[1] + SeqSum(Tail(Front(s)))
       BY <2>4, Lemma1
     <3>9. QED
-      BY <3>5, <3>6, <3>7, <3>8  
+      BY <3>5, <3>6, <3>7, <3>8
   <2>5. QED
     BY <2>3, <2>4
 <1>3. \A N \in Nat : P(N)
